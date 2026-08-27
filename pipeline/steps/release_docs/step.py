@@ -1,0 +1,473 @@
+"""
+Step: release_docs
+
+The documentation artifacts a professional dataset release ships with:
+
+  * DT4H_Codebook.md -- one row per released column: declared type,
+    observed range or category list (already-public aggregate facts),
+    missingness rate and, crucially, what a null MEANS for that column
+    (structural "no event" vs "not measured"), from the committed
+    sentinel encoding map.
+  * DT4H_Datasheet.md -- a Datasheet for the Dataset (Gebru et al.)
+    with every mechanically-derivable section auto-filled from pipeline
+    facts and explicit TODO markers where a human judgement is required
+    (motivation, distribution/licensing decisions).
+  * DT4H_Environment_Freeze.txt -- the exact package versions of the
+    environment that produced the release (pip freeze), completing the
+    provenance chain.
+
+Everything here is derived from already-committed aggregates -- safe to
+commit.
+"""
+
+import json
+import os
+import subprocess
+import sys
+from datetime import date
+
+from pipeline.common.profiling import coarsen_extreme
+from pipeline.config import PipelineConfig
+from pipeline.steps.base import PipelineStep
+from pipeline.steps.preprocess.transforms import NYHA_COLUMN, NYHA_MISSING_SENTINEL
+
+
+class ReleaseDocsStep(PipelineStep):
+    name = "release_docs"
+
+    def run(self, config: PipelineConfig) -> None:
+        import polars as pl
+
+        out_dir = config.step_dir(self.name)
+        os.makedirs(out_dir, exist_ok=True)
+
+        if not os.path.exists(config.train_output_path):
+            raise FileNotFoundError(f"{config.train_output_path} missing -- run preprocess first.")
+        train = pl.read_parquet(config.train_output_path)
+
+        encoding = {}
+        enc_path = os.path.join(config.step_dir("preprocess"), "DT4H_Numeric_Missing_Encoding.json")
+        if os.path.exists(enc_path):
+            with open(enc_path) as f:
+                encoding = json.load(f)
+
+        var_meta = {}
+        if os.path.exists(config.metadata_path):
+            with open(config.metadata_path) as f:
+                raw = json.load(f)
+            for section in ("baseVariables", "features", "outcomes"):
+                for v in raw.get("entries", [{}])[0].get(section, []) or []:
+                    var_meta[v["name"]] = v
+
+        self._write_codebook(train, encoding, var_meta, out_dir, config)
+        self._write_datasheet(train, out_dir, config)
+        self._write_env_freeze(out_dir)
+        self._write_capability_labels(out_dir, config)
+
+    # --- capability labels ---
+
+    def _write_capability_labels(self, out_dir: str, config: PipelineConfig) -> None:
+        """One machine-readable label per released file -- a compact
+        summary of every line of evidence the pipeline holds about it
+        (fidelity, joint structure, coherence, distances, attacks, gate
+        verdict), so a downstream user or reviewer reads one JSON instead
+        of six reports. Absent evidence is null, never guessed."""
+
+        def _load(step, name):
+            p = os.path.join(config.step_dir(step), name)
+            if os.path.exists(p):
+                with open(p) as f:
+                    return json.load(f)
+            return None
+
+        gen = _load("generate", "DT4H_Generation_Summary.json") or {"runs": []}
+        ev = _load("evaluate", "DT4H_Evaluation.json") or {}
+        priv = _load("privacy", "DT4H_Privacy_Assessment.json") or {}
+        att = _load("attacks", "DT4H_Privacy_Attacks.json") or {}
+        coh = _load("coherence", "DT4H_Coherence_Audit.json") or {}
+        surv = _load("survival", "DT4H_Survival_Fidelity.json") or {}
+
+        ev_by_run = {c.get("run_id"): c for c in ev.get("comparisons", [])
+                     if isinstance(c, dict) and c.get("run_id")}
+        priv_by_run = {r.get("run_id"): r for r in priv.get("runs", [])}
+        att_by_run = {r.get("run_id"): r for r in att.get("runs", [])}
+        coh_by_run = {}
+        for fr in coh.get("frames", []):
+            label = fr.get("frame", "")
+            if label.startswith("synthetic[") and label.endswith("]"):
+                coh_by_run[label[len("synthetic["):-1]] = fr
+
+        labels_dir = os.path.join(out_dir, "labels")
+        os.makedirs(labels_dir, exist_ok=True)
+        index = []
+        for run in gen.get("runs", []):
+            if run.get("status") != "ok":
+                continue
+            rid = run["run_id"]
+            e = ev_by_run.get(rid, {})
+            agg = (e.get("train_vs_synthetic") or {}).get("aggregates", {})
+            assoc = e.get("associations") or {}
+            fabricated = sum((assoc.get(k) or {}).get("fabricated_pairs", 0) or 0
+                             for k in ("num_num", "cat_cat", "num_cat"))
+            p = priv_by_run.get(rid, {})
+            a = att_by_run.get(rid, {})
+            mia = a.get("membership_inference", {})
+            atyp = mia.get("mia_by_atypicality") or []
+            aia = a.get("attribute_inference") or []
+            # Gate verdicts are policy-dependent: prefer the machine-
+            # readable sidecar, which names the policy the file was gated
+            # under, and fall back to the markdown for older reports.
+            gate_base = os.path.join(config.step_dir("generate"),
+                                     f"DT4H_Release_Gate_DT4H_Synthetic_{rid}")
+            gate, gate_policy, gate_open = None, None, None
+            if os.path.exists(gate_base + ".json"):
+                with open(gate_base + ".json") as f:
+                    g = json.load(f)
+                gate = g.get("verdict")
+                gate_policy = g.get("policy")
+                gate_open = g.get("cleared_for_open_release")
+            elif os.path.exists(gate_base + ".md"):
+                text = open(gate_base + ".md").read()
+                gate = "PASS" if "PASS -- cleared for release" in text else "FAIL"
+                gate_policy = "release"
+                gate_open = gate == "PASS"
+
+            label = {
+                "run_id": rid,
+                "file": f"DT4H_Synthetic_{rid}.csv",
+                "synthesizer": run.get("synthesizer"),
+                "base_synthesizer": run.get("base_synthesizer", run.get("synthesizer")),
+                "run_transform": run.get("run_transform"),
+                "differential_privacy": {"formal_guarantee": bool(run.get("is_dp")),
+                                         "epsilon": run.get("epsilon")},
+                "seed": run.get("seed"),
+                "rows": run.get("output_rows"),
+                "columns": run.get("output_columns"),
+                "fidelity": {
+                    "ks_mean_numeric": (agg.get("ks") or {}).get("mean"),
+                    "tvd_mean_categorical": (agg.get("tvd") or {}).get("mean"),
+                    "missing_rate_mad": agg.get("missing_rate_mean_abs_diff"),
+                    "c2st_auc": e.get("c2st_auc"),
+                },
+                "joint_structure": {"fabricated_association_pairs": fabricated or None},
+                "row_coherence": {
+                    "violation_rate": coh_by_run.get(rid, {}).get("overall_violation_rate"),
+                },
+                "survival": {
+                    ep: (((e.get("equivalence_vs_holdout") or {}).get(rid) or {})
+                         .get("equivalent_all_horizons"))
+                    for ep, e in (surv.get("endpoints") or {}).items()
+                },
+                "distances": {
+                    "verbatim_training_rows": (run.get("leakage") or {}).get(
+                        "exact_duplicates_of_training_rows"),
+                    "dcr_median": p.get("dcr_median"),
+                    "share_closer_than_holdout_p5": p.get("share_closer_than_holdout_p5"),
+                    "nndr_median": p.get("nndr_median"),
+                },
+                "attacks": {
+                    "mia_auc": mia.get("attack_auc"),
+                    "mia_learned_auc": mia.get("learned_attack_auc"),
+                    "empirical_epsilon_lower_bound":
+                        mia.get("empirical_epsilon_lower_bound"),
+                    "mia_auc_most_atypical_quartile":
+                        atyp[-1]["attack_auc"] if atyp else None,
+                    "aia_worst_membership_advantage":
+                        max((x.get("membership_advantage") for x in aia
+                             if x.get("membership_advantage") is not None), default=None),
+                    "singling_out_risk": (a.get("anonymeter") or {}).get("singling_out_risk"),
+                    "linkability_risk": (a.get("anonymeter") or {}).get("linkability_risk"),
+                },
+                "release_gate": gate or "not gated",
+                # A PASS is only as strong as the policy behind it: a file
+                # cleared under a relaxed policy is not cleared for open
+                # release, and the label must not let the two read alike.
+                "release_gate_policy": gate_policy,
+                "cleared_for_open_release": gate_open,
+            }
+            with open(os.path.join(labels_dir, f"DT4H_Label_{rid}.json"), "w") as f:
+                json.dump(label, f, indent=2, default=str)
+            index.append({"run_id": rid, "synthesizer": label["synthesizer"],
+                          "epsilon": run.get("epsilon"), "release_gate": label["release_gate"],
+                          "release_gate_policy": gate_policy,
+                          "cleared_for_open_release": gate_open})
+
+        with open(os.path.join(out_dir, "DT4H_Capability_Labels_Index.json"), "w") as f:
+            json.dump({"labels": index, "directory": "labels/"}, f, indent=2, default=str)
+        print(f"Saved capability labels for {len(index)} released file(s) -> {labels_dir}")
+
+    # --- codebook ---
+
+    def _write_codebook(self, train, encoding, var_meta, out_dir, config) -> None:
+        import polars as pl
+
+        lines = [
+            "# DT4H UC1 Synthetic Dataset -- Codebook",
+            "",
+            f"Generated {date.today().isoformat()} by the pipeline. One row per released "
+            "column. Ranges and category lists are aggregate facts over the training split "
+            "(also published in the profiling reports). **A null is never 'unknown noise' "
+            "in this dataset -- its meaning is stated per column.**",
+            "",
+            "Numeric ranges below are **coarsened for disclosure control**: each min/max is "
+            "rounded outward (min down, max up) to 2 significant figures, so a published "
+            "endpoint is never an exact single-patient value while still bounding the true "
+            "range.",
+            "",
+            "| column | type | description | values / range | missing % | null means |",
+            "|---|---|---|---|---|---|",
+        ]
+
+        def _desc(c):
+            v = var_meta.get(c, {})
+            d = (v.get("description") or v.get("generatedDescription") or "").replace("|", "/")
+            d = " ".join(d.split())
+            return d[:110] + ("…" if len(d) > 110 else "")
+
+        def _coarse_range(lo, hi):
+            return f"{coarsen_extreme(float(lo), 'floor')} .. {coarsen_extreme(float(hi), 'ceil')}"
+
+        for c in train.columns:
+            s = train[c]
+            declared = var_meta.get(c, {}).get("dataType", "")
+            missing_note = "n/a (no nulls)"
+            if c in encoding:
+                # The encoding spec records the kind of missingness the
+                # sentinel stands in for ('no_event' vs 'not_measured').
+                kind = encoding[c].get("missingness_kind")
+                missing_note = ("no event occurred (structural)"
+                                if kind == "no_event" else "not measured")
+            if s.dtype in (pl.Float32, pl.Float64, pl.Int32, pl.Int64):
+                spec = encoding.get(c)
+                if c == NYHA_COLUMN:
+                    # NYHA carries its missingness as an in-band sentinel
+                    # (0 = not assessed), NOT via the encoding map, so the
+                    # generic "no nulls -> 0% missing" path reports it as if
+                    # nothing were missing. Report the true sentinel share
+                    # and range over the real ordinal classes (1-4).
+                    non_sentinel = s.filter(s != NYHA_MISSING_SENTINEL)
+                    if non_sentinel.len():
+                        rng = _coarse_range(non_sentinel.min(), non_sentinel.max())
+                    else:
+                        rng = "n/a"
+                    miss = f"{100 * (s == NYHA_MISSING_SENTINEL).sum() / len(s):.0f}%"
+                    missing_note = f"not assessed (sentinel {NYHA_MISSING_SENTINEL})"
+                elif spec:
+                    rng = _coarse_range(spec.get("min_observed", s.min()),
+                                        spec.get("max_observed", s.max()))
+                    miss = f"{100 * (s == spec['sentinel']).sum() / len(s):.0f}%"
+                else:
+                    rng = _coarse_range(s.min(), s.max())
+                    miss = "0%"
+                lines.append(f"| `{c}` | numeric {declared} | {_desc(c)} | {rng} | {miss} | {missing_note} |")
+            else:
+                cats = s.unique().to_list()
+                cats = sorted(str(x) for x in cats if x is not None)
+                miss_rate = (s == "Missing").sum() / len(s) if "Missing" in cats else 0
+                shown = ", ".join(cats[:6]) + (" …" if len(cats) > 6 else "")
+                note = "explicit 'Missing' category" if "Missing" in cats else "n/a (no nulls)"
+                lines.append(f"| `{c}` | categorical {declared} | {_desc(c)} | {shown} "
+                             f"| {100 * miss_rate:.0f}% | {note} |")
+
+        path = os.path.join(out_dir, "DT4H_Codebook.md")
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+        print(f"Saved codebook ({len(train.columns)} columns) -> {path}")
+
+    # --- datasheet ---
+
+    @staticmethod
+    def _exact_match_claim(config) -> str:
+        """Fill the 'no verbatim training rows' claim from the actual
+        privacy assessment (exact_matches per run), never as static text.
+        Missing or contradicting evidence -> an explicit NOT VERIFIED line
+        so the datasheet cannot claim more than the build proved."""
+        p = os.path.join(config.step_dir("privacy"), "DT4H_Privacy_Assessment.json")
+        if not os.path.exists(p):
+            return ("NOT VERIFIED IN THIS BUILD: the privacy assessment "
+                    "(DT4H_Privacy_Assessment.json) is absent, so exact training-row "
+                    "reproduction was not checked.")
+        with open(p) as f:
+            priv = json.load(f)
+        runs = priv.get("runs", []) or []
+        if not runs:
+            return ("NOT VERIFIED IN THIS BUILD: the privacy assessment records no "
+                    "per-file exact-match results.")
+        missing = [r.get("run_id", "?") for r in runs if r.get("exact_matches") is None]
+        if missing:
+            return (f"NOT VERIFIED IN THIS BUILD: {len(missing)} assessed file(s) have no "
+                    f"exact-match count recorded (e.g. {missing[:3]}).")
+        offenders = [(r.get("run_id", "?"), r["exact_matches"])
+                     for r in runs if r.get("exact_matches", 0) > 0]
+        if offenders:
+            return (f"NOT VERIFIED IN THIS BUILD: {len(offenders)} of {len(runs)} assessed "
+                    f"file(s) reproduced training rows verbatim "
+                    f"(e.g. {offenders[0][0]}: {offenders[0][1]} exact match(es)). "
+                    f"These files must not be released.")
+        return (f"verified: zero exact training-row reproductions across all {len(runs)} "
+                f"assessed released file(s) (DT4H_Privacy_Assessment.json)")
+
+    @staticmethod
+    def _distribution_claim(config) -> str:
+        """The distribution-preservation claim, conditioned on a recorded
+        KS/TVD-vs-raw check in the preprocessing summary. No such record ->
+        NOT VERIFIED rather than the old static 'KS = 0, TVD = 0'."""
+        p = os.path.join(config.step_dir("preprocess"), "DT4H_Preprocessing_Summary.json")
+        evidence = None
+        if os.path.exists(p):
+            with open(p) as f:
+                summ = json.load(f)
+            evidence = summ.get("distribution_preservation") or summ.get("ks_tvd_vs_raw")
+        if not evidence:
+            return ("fully scripted (see `DT4H_Preprocessing_Summary.md`). NOT VERIFIED IN "
+                    "THIS BUILD: no per-column KS/TVD-vs-raw distribution-preservation check "
+                    "is recorded, so no distribution-preserving guarantee is asserted here")
+        ks = evidence.get("ks_max", evidence.get("ks"))
+        tvd = evidence.get("tvd_max", evidence.get("tvd"))
+        return (f"distribution-preserving on all retained columns "
+                f"(max KS = {ks}, max TVD = {tvd} vs raw; see "
+                f"`DT4H_Preprocessing_Summary.md`) and fully scripted")
+
+    @staticmethod
+    def _dp_paragraph(gen_summary) -> str:
+        """DP wording derived from the generation summary's recorded per-run
+        provenance, written to be TRUE whether or not the DP re-fit that
+        records (epsilon, delta) and a public-domain bounds source has
+        happened. When those fields are absent, fall back to voiding the
+        formal guarantee -- docs must never claim more than the recorded
+        provenance supports."""
+        runs = gen_summary.get("runs", []) or []
+        # is_dp is the recorded flag; a recorded epsilon is treated as DP
+        # evidence too, so an older or hand-repaired summary can never
+        # make an epsilon-labelled file read as "no DP label".
+        dp_runs = [r for r in runs if r.get("is_dp") or r.get("epsilon") is not None]
+        if not dp_runs:
+            return ("- No file in this build carries a differential-privacy label; the "
+                    "non-DP synthesizers provide empirical privacy evidence (attacks and "
+                    "record-level distances) only, not a formal guarantee.")
+        # Recorded per-run DP provenance (present only once the DP re-fit
+        # populates them): a delta, and where the public column domains came
+        # from (a reviewed public_domains.json rather than the data).
+        deltas = sorted({r.get("delta") for r in dp_runs if r.get("delta") is not None})
+        bounds_sources = sorted({r.get("bounds_source") for r in dp_runs
+                                 if r.get("bounds_source")})
+        if deltas and bounds_sources:
+            eps = sorted({r.get("epsilon") for r in dp_runs if r.get("epsilon") is not None})
+            return (
+                "- DP-labelled files record a per-run (epsilon, delta) "
+                f"(epsilon in {{{', '.join(f'{e:g}' for e in eps)}}}, "
+                f"delta in {{{', '.join(f'{d:g}' for d in deltas)}}}). Public column "
+                f"domains are taken from a reviewed public metadata source "
+                f"({', '.join(bounds_sources)}), so no epsilon is spent discovering "
+                "them. Categorical vocabularies and the AIM column selection are "
+                "data-dependent and are disclosed as such.")
+        return (
+            "- DP-labelled files were fit with a per-run epsilon, but this build did "
+            "NOT record a delta or a reviewed public-domain source: column bounds were "
+            "data-derived, so the formal (epsilon, delta) guarantee is void for these "
+            "files. See Uses/limitations; treat their privacy as empirical (attacks and "
+            "record-level distances) until a DP re-fit records the (epsilon, delta) and "
+            "public-domain provenance.")
+
+    def _write_datasheet(self, train, out_dir, config) -> None:
+        n_rows, n_cols = train.height, train.width
+        gen_summary = {}
+        p = os.path.join(config.step_dir("generate"), "DT4H_Generation_Summary.json")
+        if os.path.exists(p):
+            with open(p) as f:
+                gen_summary = json.load(f)
+        prov = gen_summary.get("provenance", {})
+        exact_match_claim = self._exact_match_claim(config)
+        distribution_claim = self._distribution_claim(config)
+        dp_paragraph = self._dp_paragraph(gen_summary)
+
+        text = f"""# Datasheet: DT4H UC1 Synthetic Heart-Failure Cohort
+
+Structure follows *Datasheets for Datasets* (Gebru et al., 2021).
+
+## Motivation
+- **Purpose**: a privacy-preserving synthetic version of the DataTools4Heart
+  (DT4H) Use Case 1 heart-failure cohort, enabling method development,
+  benchmarking, education and analysis piloting without access to patient-level
+  data.
+- **Context**: created within the DataTools4Heart project, a European
+  multi-partner initiative building a federated cardiology data toolbox. The
+  synthetic release lets researchers outside the secure environment work with
+  realistic UC1-shaped data while the real records never leave the provider.
+
+## Composition
+- Synthetic patient-level records: {gen_summary.get('n_synthetic_rows', 'see generation summary')}
+  rows x {n_cols} columns per released file, matching the training-split schema.
+- Source (never released): {n_rows} training records ({config.holdout_fraction:.0%} of the
+  cohort held out for evaluation and never shown to any generator).
+- Column semantics: see `DT4H_Codebook.md`. Missingness is preserved by design and
+  carries meaning (structural "no event" vs "not measured").
+- No real patient records or identifiers are included. Verbatim-row check --
+  {exact_match_claim}.
+
+## Collection & preprocessing
+- Source data were extracted from the electronic health records of the providing
+  DT4H clinical partner site under the project's federated data protocol
+  (standardized onFHIR/Feast feature extraction; see the feature-set metadata),
+  and delivered 2026-08-12 into the project's secure research environment.
+- All processing -- including generator training -- took place inside that secure
+  environment (an isolated analysis workspace with no patient-level data export);
+  only aggregate statistics, synthetic records and reports leave it. Processing
+  is governed by the project's data-sharing and governance agreements between
+  the consortium partners.
+- Preprocessing is {distribution_claim}.
+- Generators: see the run plan in `DT4H_Generation_Summary.md` (seeds, epsilon
+  values, library versions, git commit `{prov.get('git', {}).get('commit', 'n/a')}`,
+  training-file SHA-256).
+
+## Uses
+- Intended: methods development, education, benchmarking, pre-analysis piloting.
+- Cautions: effect estimates and model performance are attenuated relative to real
+  data (quantified in `DT4H_Utility_TSTR.md` and `DT4H_Survival_Fidelity.md`);
+  fidelity is weakest for sparsely observed laboratory values. Synthetic data must
+  not be represented as real patients in any publication.
+
+## Privacy & release gating
+- Record-level distances, membership-inference and attribute-inference attacks are
+  reported in `DT4H_Privacy_Assessment.md` and `DT4H_Privacy_Attacks.md`, all
+  evaluated against a genuine unseen-patient baseline.
+{dp_paragraph}
+- Every file must pass `release_gate.py` before distribution.
+
+## Distribution & maintenance
+- **Hosting**: the project repository
+  (github.com/kkech/SyntheticDataGenerationDT4H) carries the pipeline, all
+  evaluation reports and the release documentation; vetted synthetic files are
+  added there deliberately after passing `release_gate.py`. An archival deposit
+  with a DOI (Zenodo) will be minted for the exact release accompanying the
+  publication.
+- **License**: documentation, reports and code are released openly with the
+  repository; the synthetic data files are intended for release under CC BY 4.0,
+  subject to final consortium approval.
+- **Point of contact**: the repository maintainers, via GitHub issues on the
+  repository above.
+- **Versioning**: every release is reproducible from its recorded git commit,
+  seeds and training-file SHA-256 (see the generation summary and
+  `DT4H_Environment_Freeze.txt`); releases are tagged in git and superseded
+  versions remain available in history.
+- **Retraction**: should any privacy or integrity concern be identified, the
+  affected files will be removed from the repository and archival deposit, the
+  release tag withdrawn, and the concern documented in the repository.
+"""
+        path = os.path.join(out_dir, "DT4H_Datasheet.md")
+        with open(path, "w") as f:
+            f.write(text)
+        print(f"Saved datasheet -> {path}")
+
+    # --- environment freeze ---
+
+    def _write_env_freeze(self, out_dir) -> None:
+        path = os.path.join(out_dir, "DT4H_Environment_Freeze.txt")
+        try:
+            freeze = subprocess.check_output(
+                [sys.executable, "-m", "pip", "freeze"], text=True, timeout=120)
+            with open(path, "w") as f:
+                f.write(f"# python {sys.version.split()[0]}\n{freeze}")
+            print(f"Saved environment freeze ({len(freeze.splitlines())} packages) -> {path}")
+        except Exception as e:
+            print(f"⚠️  Could not capture pip freeze: {type(e).__name__}: {e}")

@@ -1,0 +1,384 @@
+{
+  "reviewed": true,
+  "note": "PUBLIC domain declaration [lo, hi] per numeric column, with the basis naming the public knowledge each range rests on. Reviewed and released as part of the DP mechanism specification. The observed extremes used during review are not part of this file.",
+  "generated_by": "make_public_domains.py",
+  "proposal_rule": "observed range rounded outward to 1 significant figure (a small positive floor is proposed as 0)",
+  "sources": {
+    "profile": {
+      "path": "/home/user/SyntheticDataGenerationDT4H/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.json",
+      "sha256": "d9a9cbd6bfdf577538b0a4ebd027aa4cf2d2744dae14285741db366c788a44af"
+    },
+    "encoding_map": {
+      "path": "/home/user/SyntheticDataGenerationDT4H/output/preprocess/DT4H_Numeric_Missing_Encoding.json",
+      "sha256": "f4037abf6b5fefcc17f44aca6825b0259f04cfa4d2ba02d655eb91f79cc323b3"
+    }
+  },
+  "domains": {
+    "patient_demographics_age": {
+      "lo": 18.0,
+      "hi": 110.0,
+      "sentinel_encoded": false,
+      "basis": "adult-cohort inclusion criterion; extreme human longevity"
+    },
+    "encounters_lengthOfStay": {
+      "lo": 0.0,
+      "hi": 400.0,
+      "sentinel_encoded": false,
+      "basis": "hospital length of stay, days; year-long extreme admissions"
+    },
+    "encounters_numOfPreviousHFStays_count": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": false,
+      "basis": "recorded encounter counter; generous upper bound"
+    },
+    "vital_signs_weight_value_p6mo_last": {
+      "lo": 20.0,
+      "hi": 350.0,
+      "sentinel_encoded": true,
+      "basis": "recorded adult body weight, kg; extreme obesity"
+    },
+    "vital_signs_weight_value_p6mo_first": {
+      "lo": 20.0,
+      "hi": 350.0,
+      "sentinel_encoded": true,
+      "basis": "recorded adult body weight, kg; extreme obesity"
+    },
+    "vital_signs_height_value_p1a_avg": {
+      "lo": 90.0,
+      "hi": 250.0,
+      "sentinel_encoded": true,
+      "basis": "recorded adult height, cm, incl. documented entry artifacts"
+    },
+    "vital_signs_weight_value_last": {
+      "lo": 20.0,
+      "hi": 350.0,
+      "sentinel_encoded": true,
+      "basis": "recorded adult body weight, kg; extreme obesity"
+    },
+    "vital_signs_height_value_last": {
+      "lo": 90.0,
+      "hi": 250.0,
+      "sentinel_encoded": true,
+      "basis": "recorded adult height, cm, incl. documented entry artifacts"
+    },
+    "vital_signs_bmi_value_last": {
+      "lo": 10.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "BMI derivable from the weight/height domains"
+    },
+    "vital_signs_systolicBp_value_first": {
+      "lo": 30.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "recorded systolic BP, mmHg; device reporting range"
+    },
+    "vital_signs_systolicBp_value_last": {
+      "lo": 30.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "recorded systolic BP, mmHg; device reporting range"
+    },
+    "vital_signs_diastolicBp_value_first": {
+      "lo": 0.0,
+      "hi": 250.0,
+      "sentinel_encoded": true,
+      "basis": "recorded diastolic BP, mmHg, incl. artifactual lows"
+    },
+    "vital_signs_diastolicBp_value_last": {
+      "lo": 0.0,
+      "hi": 250.0,
+      "sentinel_encoded": true,
+      "basis": "recorded diastolic BP, mmHg, incl. artifactual lows"
+    },
+    "vital_signs_heartRate_value_first": {
+      "lo": 0.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "recorded heart rate, bpm; monitor reporting range"
+    },
+    "vital_signs_heartRate_value_last": {
+      "lo": 0.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "recorded heart rate, bpm; monitor reporting range"
+    },
+    "lab_results_hemoglobin_value_last": {
+      "lo": 0.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "hemoglobin, g/L, incl. documented unit-mix artifacts near 0"
+    },
+    "lab_results_hemoglobin_value_first": {
+      "lo": 0.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "hemoglobin, g/L, incl. documented unit-mix artifacts near 0"
+    },
+    "lab_results_ferritin_value_last": {
+      "lo": 0.0,
+      "hi": 100000.0,
+      "sentinel_encoded": true,
+      "basis": "ferritin, ug/L; hemophagocytosis/iron-overload extremes"
+    },
+    "lab_results_ferritin_value_first": {
+      "lo": 0.0,
+      "hi": 100000.0,
+      "sentinel_encoded": true,
+      "basis": "ferritin, ug/L; hemophagocytosis/iron-overload extremes"
+    },
+    "lab_results_ntProBnp_value_last": {
+      "lo": 0.0,
+      "hi": 70000.0,
+      "sentinel_encoded": true,
+      "basis": "assay upper reporting limit (values censored at 70000)"
+    },
+    "lab_results_ntProBnp_value_first": {
+      "lo": 0.0,
+      "hi": 70000.0,
+      "sentinel_encoded": true,
+      "basis": "assay upper reporting limit (values censored at 70000)"
+    },
+    "lab_results_crpNonHs_value_last": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "CRP, mg/L; extreme sepsis values"
+    },
+    "lab_results_crpNonHs_value_first": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "CRP, mg/L; extreme sepsis values"
+    },
+    "lab_results_tropTHs_value_last": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "hs-troponin T, ug/L; massive-infarction extremes"
+    },
+    "lab_results_tropTHs_value_first": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "hs-troponin T, ug/L; massive-infarction extremes"
+    },
+    "lab_results_tropTnHs_value_last": {
+      "lo": 0.0,
+      "hi": 100000.0,
+      "sentinel_encoded": true,
+      "basis": "hs-troponin, ng/L; assay dynamic range"
+    },
+    "lab_results_tropTnHs_value_first": {
+      "lo": 0.0,
+      "hi": 100000.0,
+      "sentinel_encoded": true,
+      "basis": "hs-troponin, ng/L; assay dynamic range"
+    },
+    "lab_results_triGly_value_last": {
+      "lo": 0.0,
+      "hi": 30.0,
+      "sentinel_encoded": true,
+      "basis": "triglycerides, mmol/L; severe hypertriglyceridemia"
+    },
+    "lab_results_triGly_value_first": {
+      "lo": 0.0,
+      "hi": 30.0,
+      "sentinel_encoded": true,
+      "basis": "triglycerides, mmol/L; severe hypertriglyceridemia"
+    },
+    "lab_results_cholTot_value_last": {
+      "lo": 0.5,
+      "hi": 15.0,
+      "sentinel_encoded": true,
+      "basis": "total cholesterol, mmol/L; familial-hypercholesterolemia extremes"
+    },
+    "lab_results_cholTot_value_first": {
+      "lo": 0.5,
+      "hi": 15.0,
+      "sentinel_encoded": true,
+      "basis": "total cholesterol, mmol/L; familial-hypercholesterolemia extremes"
+    },
+    "lab_results_hdl_value_last": {
+      "lo": 0.0,
+      "hi": 5.0,
+      "sentinel_encoded": true,
+      "basis": "HDL, mmol/L"
+    },
+    "lab_results_hdl_value_first": {
+      "lo": 0.0,
+      "hi": 5.0,
+      "sentinel_encoded": true,
+      "basis": "HDL, mmol/L"
+    },
+    "lab_results_ldl_value_last": {
+      "lo": 0.0,
+      "hi": 12.0,
+      "sentinel_encoded": true,
+      "basis": "LDL, mmol/L; familial-hypercholesterolemia extremes"
+    },
+    "lab_results_ldl_value_first": {
+      "lo": 0.0,
+      "hi": 12.0,
+      "sentinel_encoded": true,
+      "basis": "LDL, mmol/L; familial-hypercholesterolemia extremes"
+    },
+    "lab_results_potassium_value_last": {
+      "lo": 1.0,
+      "hi": 10.0,
+      "sentinel_encoded": true,
+      "basis": "serum potassium, mmol/L; survivable extremes with margin"
+    },
+    "lab_results_potassium_value_first": {
+      "lo": 1.0,
+      "hi": 10.0,
+      "sentinel_encoded": true,
+      "basis": "serum potassium, mmol/L; survivable extremes with margin"
+    },
+    "lab_results_sodium_value_last": {
+      "lo": 90.0,
+      "hi": 200.0,
+      "sentinel_encoded": true,
+      "basis": "serum sodium, mmol/L; survivable extremes with margin"
+    },
+    "lab_results_sodium_value_first": {
+      "lo": 90.0,
+      "hi": 200.0,
+      "sentinel_encoded": true,
+      "basis": "serum sodium, mmol/L; survivable extremes with margin"
+    },
+    "lab_results_creatUS_value_last": {
+      "lo": 0.0,
+      "hi": 4000.0,
+      "sentinel_encoded": true,
+      "basis": "urine/serum creatinine, umol/L; dialysis-range extremes"
+    },
+    "lab_results_creatUS_value_first": {
+      "lo": 0.0,
+      "hi": 4000.0,
+      "sentinel_encoded": true,
+      "basis": "urine/serum creatinine, umol/L; dialysis-range extremes"
+    },
+    "lab_results_albuminBS_value_last": {
+      "lo": 5.0,
+      "hi": 60.0,
+      "sentinel_encoded": true,
+      "basis": "serum albumin, g/L; severe-illness extremes"
+    },
+    "lab_results_albuminBS_value_first": {
+      "lo": 5.0,
+      "hi": 60.0,
+      "sentinel_encoded": true,
+      "basis": "serum albumin, g/L; severe-illness extremes"
+    },
+    "lab_results_validSerumCreatinine_value_last": {
+      "lo": 0.0,
+      "hi": 30.0,
+      "sentinel_encoded": true,
+      "basis": "serum creatinine, mg/dL; dialysis-range extremes"
+    },
+    "lab_results_validSerumCreatinine_value_first": {
+      "lo": 0.0,
+      "hi": 30.0,
+      "sentinel_encoded": true,
+      "basis": "serum creatinine, mg/dL; dialysis-range extremes"
+    },
+    "lab_results_valideGFR_value_first": {
+      "lo": 0.0,
+      "hi": 90.0,
+      "sentinel_encoded": true,
+      "basis": "derivation caps reported eGFR at 90 by definition"
+    },
+    "lab_results_valideGFR_value_last": {
+      "lo": 0.0,
+      "hi": 90.0,
+      "sentinel_encoded": true,
+      "basis": "derivation caps reported eGFR at 90 by definition"
+    },
+    "echocardiographs_lvef_pET_last": {
+      "lo": -200.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "percentage scale; negative recorded values are documented source-EHR artifacts"
+    },
+    "echocardiographs_lvef_pET_first": {
+      "lo": -200.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "percentage scale; negative recorded values are documented source-EHR artifacts"
+    },
+    "electrocardiographs_ecg_qrs_duration_pET_first": {
+      "lo": 10.0,
+      "hi": 400.0,
+      "sentinel_encoded": true,
+      "basis": "recorded QRS duration, ms; device reporting range"
+    },
+    "electrocardiographs_ecg_qrs_duration_pET_last": {
+      "lo": 10.0,
+      "hi": 400.0,
+      "sentinel_encoded": true,
+      "basis": "recorded QRS duration, ms; device reporting range"
+    },
+    "electrocardiographs_ecg_qt_duration_corrected_pET_first": {
+      "lo": 100.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "recorded QTc, ms; device reporting range"
+    },
+    "electrocardiographs_ecg_qt_duration_corrected_pET_last": {
+      "lo": 100.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "recorded QTc, ms; device reporting range"
+    },
+    "smoking_status_smoker_startTime_count": {
+      "lo": 0.0,
+      "hi": 50.0,
+      "sentinel_encoded": false,
+      "basis": "recorded counter; generous upper bound"
+    },
+    "nyha_nyha_pET": {
+      "lo": 0.0,
+      "hi": 4.0,
+      "sentinel_encoded": false,
+      "basis": "ordinal scale: classes 1-4 plus the 0 = not-assessed sentinel"
+    },
+    "conditions_heartFailure_timeFromEarliest_first": {
+      "lo": 0.0,
+      "hi": 600.0,
+      "sentinel_encoded": true,
+      "basis": "time since earliest recorded HF; bounded by maximum plausible history"
+    },
+    "encounter_primary_reason_number_of_days_to_rehosp_for_heart_failure_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "study design: 5-year follow-up window incl. leap day"
+    },
+    "encounter_primary_reason_number_of_days_to_rehosp_for_CV_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "study design: 5-year follow-up window incl. leap day"
+    },
+    "encounter_primary_reason_number_of_days_to_rehosp_for_non_CV_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "study design: 5-year follow-up window incl. leap day"
+    },
+    "cause_of_death_number_of_days_to_death_for_all_cause_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "study design: 5-year follow-up window incl. leap day"
+    },
+    "eGFR_2021_ckd_epi_creatinine": {
+      "lo": 0.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "CKD-EPI 2021 formula output over the creatinine domain"
+    }
+  }
+}
