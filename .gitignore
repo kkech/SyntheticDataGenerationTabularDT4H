@@ -33,3 +33,4 @@ output/generate/models/
 job_console.log
 logs/
 backups/
+catalogue.json

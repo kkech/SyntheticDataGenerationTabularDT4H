@@ -81,9 +81,18 @@ appearing under `output/`.
 python main.py --preflight          # verify libs, GPU, inputs, disk BEFORE a long run
 python main.py --data-dir /path/to/extract [--metadata /path/to/metadata.json]
                                    # point the pipeline at a new site's part-*.parquet
-                                   #   extract (Amsterdam and beyond); --metadata only
-                                   #   when the JSON is not inside the data dir.
+                                   #   extract directly (Amsterdam and beyond); --metadata
+                                   #   only when the JSON is not inside the data dir.
                                    #   Combine with --extended/--force/--preflight.
+python main.py --cdm-root /path/to/cdm/root
+                                   # resolve the data dir FROM onFHIR-Feast's catalogue.json
+                                   #   instead of naming it directly: reads <cdm-root>/
+                                   #   catalogue.json, finds the newest entry for
+                                   #   PipelineConfig.catalogue_study_name (default "Study1",
+                                   #   by featureSet version), and expects its part-*.parquet
+                                   #   under <cdm-root>/<featureset-resource-name>/<id>/.
+                                   #   Defaults to $CDM_ROOT_PATH; --preflight checks every
+                                   #   stage. Mutually exclusive with --data-dir.
 python main.py --status             # step completion status
 python main.py --force              # rerun everything
 python main.py --force-step generate --force-step evaluate --force-step privacy
@@ -241,9 +250,14 @@ override the thresholds ad hoc and are recorded as a custom policy;
 ## Running at a partner site
 
 This repository is site-portable: point it at your own DT4H UC1 extract
-(the Spark `part-*.parquet` files plus the feature-set `metadata.json`)
 and the entire campaign -- generation, evaluation, gating, documentation
 -- runs unchanged.
+
+Sites that produce data via onFHIR-Feast expose a `catalogue.json` (its
+per-run manifest) alongside the extract, so you don't need to hunt down
+or hand-carry the exact `part-*.parquet` folder yourself -- point the
+pipeline at the root that holds `catalogue.json`
+(`CDM_ROOT_PATH`) and it resolves the newest run for you:
 
 ```
 git clone <partner-repo-url>
@@ -251,24 +265,35 @@ cd SyntheticDataGenerationTabularDT4H
 curl -LsSf https://astral.sh/uv/install.sh | sh   # skip if uv is already installed
 uv venv --python 3.10 --seed .synthenv && source .synthenv/bin/activate   # see Setup
 pip install -r requirements.txt          # see the numpy note under Setup
-DATA_PATH=/your/part-parquet-folder      # set this once to your site's extract
-python main.py --preflight --data-dir "$DATA_PATH"
-./run_job.sh start --force --extended --data-dir "$DATA_PATH"
+CDM_ROOT_PATH=/your/cdm/root             # set this once: the folder holding catalogue.json
+python main.py --preflight --cdm-root "$CDM_ROOT_PATH"
+./run_job.sh start --force --extended --cdm-root "$CDM_ROOT_PATH"
 ./run_job.sh status                      # any time; `follow` streams the log
 python release_gate.py --all             # after the run: gate every file, both policies
 ```
 
-Add `--metadata /path/to/metadata.json` if the JSON does not live inside
-`$DATA_PATH`. `--extended` is optional: dropping it runs the core
-31-run plan (six model families) and saves roughly 20 hours; the
-extended plan adds the model variants, the diffusion baseline and
-PATE-CTGAN. A machine without a CUDA GPU runs everything too, just
-slower on the GAN/VAE models -- preflight says so explicitly.
+`--preflight` reports every resolution stage by name -- `catalogue.json`
+found, the newest `Study1` entry (ranked by its `featureSet` version, see
+`pipeline/catalogue.py`), its on-disk `<featureset-resource-name>/<id>/`
+folder, and the `part-*.parquet` files inside it -- so a broken layout is
+named exactly rather than failing as a generic "input data" miss.
+
+No catalogue at your site, or you already know the exact extract folder?
+`--data-dir /your/part-parquet-folder` (plus `--metadata` if the JSON
+isn't inside it) still points the pipeline at a folder directly, exactly
+as before -- `--cdm-root`/`--data-dir` are mutually exclusive, pick one.
+`--extended` is optional: dropping it runs the core 31-run plan (six
+model families) and saves roughly 20 hours; the extended plan adds the
+model variants, the diffusion baseline and PATE-CTGAN. A machine without
+a CUDA GPU runs everything too, just slower on the GAN/VAE models --
+preflight says so explicitly.
 
 The pipeline argues for itself at a new site, before hours are spent:
 
 * **preflight** refuses to start and names anything missing (libraries,
-  GPU, data, the reviewed public-domain file, disk);
+  GPU, data -- including every catalogue resolution stage when
+  `--cdm-root`/`$CDM_ROOT_PATH` is used --, the reviewed public-domain
+  file, disk);
 * **preprocess** hard-fails with a named error if the extract violates an
   assumption (duplicated patient ids, unmapped NYHA codes);
 * **DP fits** abort BEFORE training if any of your values falls outside a

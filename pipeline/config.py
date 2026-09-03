@@ -8,13 +8,32 @@ sample instead of the real full dataset.
 import os
 from dataclasses import dataclass
 
+from pipeline.catalogue import DEFAULT_STUDY_NAME
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 @dataclass
 class PipelineConfig:
-    # Where the raw transfer (Spark part-*.parquet files) lives.
+    # Where the raw transfer (Spark part-*.parquet files) lives. Left at
+    # this placeholder when cdm_root_path is used instead (main.py
+    # --cdm-root / $CDM_ROOT_PATH): the real value is then resolved from
+    # the catalogue at run time (see pipeline/catalogue.py) rather than
+    # set here directly.
     transfer_folder: str = "/path/to/your/site/part-parquet-extract/"
+
+    # Root folder containing catalogue.json and the onFHIR-Feast
+    # <featureset-resource-name>/<id>/part-*.parquet layout (main.py
+    # --cdm-root, defaults to $CDM_ROOT_PATH). When set, transfer_folder
+    # is resolved automatically -- the newest catalogue entry named
+    # catalogue_study_name -- instead of being passed by hand via
+    # --data-dir. None = use transfer_folder as configured/passed.
+    cdm_root_path: str = None
+
+    # Which catalogue entry name to resolve cdm_root_path against. This
+    # pipeline is built around DT4H UC1's "Study1", so that's the
+    # default; override for a different study's catalogue entry.
+    catalogue_study_name: str = DEFAULT_STUDY_NAME
 
     # Single root for every step's output, organized as
     # output_dir/<step_name>/. Lives inside the repo so everything in it

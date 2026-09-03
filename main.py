@@ -24,6 +24,7 @@ with --log <path>.
 """
 
 import argparse
+import os
 import time
 from datetime import datetime
 
@@ -206,10 +207,28 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
     except Exception:
         pass
 
-    have_transfer = os.path.isdir(config.transfer_folder)
     have_loaded = os.path.exists(config.local_full_dataset_path)
-    check("input data", have_transfer or have_loaded,
-          config.transfer_folder if have_transfer else config.local_full_dataset_path)
+
+    if config.cdm_root_path:
+        # No --data-dir/DATA_PATH to hand-carry: resolve it from the
+        # catalogue instead, checking every stage (catalogue.json ->
+        # newest study entry -> its on-disk folder -> part-*.parquet
+        # files) so a broken layout is named exactly, not just "input
+        # data: missing".
+        from pipeline.catalogue import resolve_data_dir
+
+        print(f"\nResolving the data directory from the catalogue (CDM_ROOT_PATH={config.cdm_root_path}):")
+        catalogue_result = resolve_data_dir(config.cdm_root_path, config.catalogue_study_name)
+        for step in catalogue_result.steps:
+            check(f"  {step.name}", step.passed, step.detail)
+        have_transfer = catalogue_result.ok
+        check("input data (resolved via catalogue, or already loaded)", have_transfer or have_loaded,
+              catalogue_result.data_dir if have_transfer else config.local_full_dataset_path)
+    else:
+        have_transfer = os.path.isdir(config.transfer_folder)
+        check("input data", have_transfer or have_loaded,
+              config.transfer_folder if have_transfer else config.local_full_dataset_path)
+
     check("metadata.json", os.path.exists(config.metadata_path) or have_transfer, config.metadata_path)
 
     free_gb = shutil.disk_usage(os.path.dirname(config.output_dir) or ".").free / 1e9
@@ -302,11 +321,21 @@ def main() -> None:
                               "native diffusion baseline ddpm x3 seeds, PATE-CTGAN x3 "
                               "epsilons). The base plan is unchanged; see "
                               "PipelineConfig.extended_plan.")
-    parser.add_argument("--data-dir", metavar="PATH",
+    data_source = parser.add_mutually_exclusive_group()
+    data_source.add_argument("--data-dir", metavar="PATH",
                          help="Directory holding the input part-*.parquet files (and, "
                               "unless --metadata is given, the metadata file). Overrides "
                               "the configured transfer folder -- this is how the pipeline "
-                              "points at a new site's extract.")
+                              "points at a new site's extract. Mutually exclusive with "
+                              "--cdm-root.")
+    data_source.add_argument("--cdm-root", metavar="PATH", default=os.environ.get("CDM_ROOT_PATH"),
+                         help="Root folder containing catalogue.json and the onFHIR-Feast "
+                              "<featureset-resource-name>/<id>/part-*.parquet layout. The "
+                              "newest catalogue entry for PipelineConfig.catalogue_study_name "
+                              "(default 'Study1', by featureSet version) is resolved to a "
+                              "data directory automatically -- no --data-dir/DATA_PATH to "
+                              "carry by hand. Defaults to $CDM_ROOT_PATH; checked step by "
+                              "step by --preflight. Mutually exclusive with --data-dir.")
     parser.add_argument("--metadata", metavar="PATH",
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
@@ -339,6 +368,8 @@ def main() -> None:
         cfg_kwargs["extended_plan"] = True
     if args.data_dir:
         cfg_kwargs["transfer_folder"] = args.data_dir
+    elif args.cdm_root:
+        cfg_kwargs["cdm_root_path"] = args.cdm_root
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
@@ -351,6 +382,26 @@ def main() -> None:
 
     if args.preflight:
         raise SystemExit(0 if preflight(cfg, min_free_gb=min_free) else 1)
+
+    # No --data-dir/DATA_PATH for a real run either: resolve
+    # cdm_root_path -> transfer_folder now, the same way --preflight
+    # just checked it (see pipeline/catalogue.py). Fails loudly with the
+    # full step checklist rather than letting load_data hit the
+    # unresolved placeholder path.
+    if cfg is not None and cfg.cdm_root_path:
+        from pipeline.catalogue import resolve_data_dir
+
+        catalogue_result = resolve_data_dir(cfg.cdm_root_path, cfg.catalogue_study_name)
+        if not catalogue_result.ok:
+            from pipeline.catalogue import CatalogueError
+
+            raise CatalogueError(
+                f"Could not resolve a data directory for '{cfg.catalogue_study_name}' from "
+                f"CDM_ROOT_PATH={cfg.cdm_root_path!r}:\n{catalogue_result.failure_summary()}\n"
+                f"Run `python main.py --preflight --cdm-root {cfg.cdm_root_path}` for the full check list."
+            )
+        print(f"Resolved data directory from the catalogue -> {catalogue_result.data_dir}")
+        cfg.transfer_folder = catalogue_result.data_dir
 
     # ./run_job.sh stop (and plain `kill`) send SIGTERM, which by default
     # ends the process without unwinding Python -- leaving the status
