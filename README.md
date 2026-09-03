@@ -248,16 +248,17 @@ and the entire campaign -- generation, evaluation, gating, documentation
 ```
 git clone <partner-repo-url>
 cd SyntheticDataGenerationTabularDT4H
-python -m venv .synthenv && source .synthenv/bin/activate
+uv venv --python 3.10 --seed .synthenv && source .synthenv/bin/activate   # see Setup
 pip install -r requirements.txt          # see the numpy note under Setup
-python main.py --preflight --data-dir /your/part-parquet-folder
-./run_job.sh start --force --extended --data-dir /your/part-parquet-folder
+DATA_PATH=/your/part-parquet-folder      # set this once to your site's extract
+python main.py --preflight --data-dir "$DATA_PATH"
+./run_job.sh start --force --extended --data-dir "$DATA_PATH"
 ./run_job.sh status                      # any time; `follow` streams the log
 python release_gate.py --all             # after the run: gate every file, both policies
 ```
 
 Add `--metadata /path/to/metadata.json` if the JSON does not live inside
-the data folder. `--extended` is optional: dropping it runs the core
+`$DATA_PATH`. `--extended` is optional: dropping it runs the core
 31-run plan (six model families) and saves roughly 20 hours; the
 extended plan adds the model variants, the diffusion baseline and
 PATE-CTGAN. A machine without a CUDA GPU runs everything too, just
@@ -283,16 +284,33 @@ patient-derived can be pushed back by accident.
 
 ## Setup
 
-Python 3.10+, a CUDA GPU recommended for the GAN/VAE models.
+Requires **Python 3.10 exactly** (`numpy<2.3` in `requirements.txt` drops
+support past it -- see the numpy note there), a CUDA GPU recommended for
+the GAN/VAE models.
+
+If the target machine doesn't already have Python 3.10, the simplest
+fix is [uv](https://docs.astral.sh/uv/): it fetches and manages the
+interpreter itself, with no system-level Python install or pyenv
+needed.
 
 ```
-python -m venv .synthenv && source .synthenv/bin/activate
+curl -LsSf https://astral.sh/uv/install.sh | sh   # skip if uv is already installed
+uv venv --python 3.10 --seed .synthenv && source .synthenv/bin/activate
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 pip install lifelines anonymeter    # optional evaluators
 pip install numpy==2.2.6            # AFTER anonymeter -- restores numpy 2
 python main.py --preflight          # must show: ✅ import mbi (MST/AIM backend)
 ```
+
+`uv venv --python 3.10` transparently downloads Python 3.10 the first
+time it's needed (into uv's own directory, not system-wide) and then
+creates the venv against it -- one command either way. `--seed`
+installs `pip` into that venv (uv-created venvs don't ship it by
+default), so every `pip install` below still works unmodified. Already
+have a system Python 3.10 and don't want the uv dependency? A plain
+`python -m venv .synthenv` works identically; everything after that
+line (`pip install ...`) is unchanged either way.
 
 **One numpy for everything:** anonymeter declares `numpy<1.27` and its
 install downgrades numpy — which silently breaks MST/AIM generation

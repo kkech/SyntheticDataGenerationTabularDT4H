@@ -15,12 +15,14 @@
 #
 # --- pinning policy ---
 # The two libraries that determine the OUTPUT are pinned exactly, because
-# this pipeline produces a dataset intended for publication. The heavy
-# shared dependencies (torch, pandas, numpy) are given ranges instead:
+# this pipeline produces a dataset intended for publication. The other
+# heavy shared dependencies (pandas, numpy) are given ranges instead:
 # nothing here needs a specific version of them, and pinning them exactly
-# forces needless upgrades that break co-installed tools. The exact
-# versions actually used are recorded per run in the generation summary's
-# provenance block, which is what makes a published result reproducible.
+# forces needless upgrades that break co-installed tools. torch is also
+# pinned exactly, but for a deployment reason rather than an output one --
+# see the note above its pin below. The exact versions actually used are
+# recorded per run in the generation summary's provenance block, which is
+# what makes a published result reproducible.
 
 # --- synthesis libraries (pinned: these define the output) ---
 # NOTE: SDV is under the Business Source License (not MIT) since 2023.
@@ -42,16 +44,20 @@ pandas>=2.0,<3
 numpy>=1.24,<2.3
 
 # --- deep learning backend ---
-# Pulled in by sdv/ctgan and the DP-GAN synthesizers. On Python 3.10
-# ctgan only requires torch>=1.13, so any recent 2.x works: if the
-# environment already has a working torch, this will leave it alone.
-# The pipeline detects CUDA at runtime and falls back to CPU.
+# Pulled in by sdv/ctgan and the DP-GAN synthesizers. The pipeline
+# detects CUDA at runtime and falls back to CPU.
 #
-# For a CPU-only machine, install the smaller CPU build as its own
-# command FIRST (never combined with -r, or PyPI packages fail to
-# resolve against the PyTorch index):
-#   pip install "torch>=2.0,<3" --index-url https://download.pytorch.org/whl/cpu
-torch>=2.0,<3
+# Pinned to a CUDA 12.1 build (needs driver >=530.30.02) instead of
+# the current PyPI default (CUDA 13, needs driver >=580). Re-pin if
+# the fleet's driver version changes -- see README "partner site".
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.5.1+cu121
+#
+# For a CPU-only machine (or one whose driver is too old even for
+# cu121), install the CPU build as its own command FIRST instead (never
+# combined with -r, or PyPI packages fail to resolve against the
+# PyTorch index), then delete/comment out the two lines above:
+#   pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
 
 # --- build note ---
 # smartnoise-synth pulls antlr4-python3-runtime 4.9.3, which is published
