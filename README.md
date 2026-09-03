@@ -248,6 +248,7 @@ and the entire campaign -- generation, evaluation, gating, documentation
 ```
 git clone <partner-repo-url>
 cd SyntheticDataGenerationTabularDT4H
+curl -LsSf https://astral.sh/uv/install.sh | sh   # skip if uv is already installed
 uv venv --python 3.10 --seed .synthenv && source .synthenv/bin/activate   # see Setup
 pip install -r requirements.txt          # see the numpy note under Setup
 DATA_PATH=/your/part-parquet-folder      # set this once to your site's extract
