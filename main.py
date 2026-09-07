@@ -340,6 +340,22 @@ def main() -> None:
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
                               "output/profile_data/metadata.json for the downstream steps.")
+    synth_filter = parser.add_mutually_exclusive_group()
+    synth_filter.add_argument("--synthesizers", metavar="NAME[,NAME...]",
+                         help="Restrict the generate step's run plan to only these synthesizer "
+                              "families (comma-separated, e.g. 'dpctgan,aim,mst') -- the SAME "
+                              "plan resolved_run_plan() would build (respects --extended), just "
+                              "filtered down to the names given. Useful for testing one model "
+                              "family in isolation without waiting on/redoing the rest. NOTE: "
+                              "--force-step generate (or --force) still deletes ALL of "
+                              "output/generate/ first -- this only controls what gets "
+                              "regenerated afterward, not what survives from a prior run. "
+                              "Mutually exclusive with --dp-only.")
+    synth_filter.add_argument("--dp-only", action="store_true",
+                         help="Shortcut for --synthesizers <every DP-registered family present "
+                              "in the resolved plan> -- derived from each synthesizer's is_dp "
+                              "flag in the registry (pipeline/steps/generate/synthesizers), not "
+                              "a hardcoded list. Mutually exclusive with --synthesizers.")
     parser.add_argument("--status", action="store_true", help="Print step-completion status and exit.")
     parser.add_argument("--min-free-gb", type=float, default=None,
                          help="Override the preflight free-disk requirement (GB). The v3 "
@@ -373,6 +389,26 @@ def main() -> None:
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
+
+    if args.synthesizers or args.dp_only:
+        cfg = cfg or PipelineConfig()
+        plan = cfg.resolved_run_plan()
+        if args.dp_only:
+            from pipeline.steps.generate.step import GenerateStep
+
+            wanted = {name for name in {s["synthesizer"] for s in plan} if GenerateStep._is_dp(name)}
+        else:
+            wanted = {n.strip() for n in args.synthesizers.split(",") if n.strip()}
+        filtered = [s for s in plan if s["synthesizer"] in wanted]
+        if not filtered:
+            parser.error(
+                f"--synthesizers/--dp-only matched no run in the resolved plan "
+                f"(wanted: {sorted(wanted)}). Available synthesizer families: "
+                f"{sorted({s['synthesizer'] for s in plan})}"
+            )
+        cfg.run_plan = filtered
+        print(f"Filtered run plan to {len(filtered)}/{len(plan)} run(s) "
+              f"(synthesizers: {sorted(wanted)}): " + ", ".join(s["run_id"] for s in filtered))
 
     # Analysis-only runs write reports and figures (tens of MB), not
     # models and datasets -- a full campaign's 5 GB headroom would block
