@@ -34,3 +34,4 @@ job_console.log
 logs/
 backups/
 catalogue.json
+metadata_new.json
