@@ -100,27 +100,72 @@ def featureset_resource_name(entry: dict) -> str:
     return m.group(1)
 
 
-def select_latest_entry(catalogue: dict, study_name: str) -> dict:
-    """The newest catalogue entry named `study_name`, ranked by featureSet
+def _parse_version_string(version: str) -> tuple:
+    """Parses a user-supplied version pin ("1.4") the same way
+    _parse_version parses the "|MAJOR.MINOR" URL suffix, for an exact
+    tuple comparison -- so "1.4" matches featureSet url "...|1.4" and
+    nothing else (not "1.40", not "1.4.0")."""
+    try:
+        return tuple(int(p) for p in version.strip().lstrip("|").split("."))
+    except ValueError:
+        raise CatalogueError(f"Invalid version {version!r} -- expected dot-separated integers, e.g. '1.4'.")
+
+
+def select_entry(catalogue: dict, study_name: str, version: str | None = None) -> dict:
+    """The catalogue entry named `study_name`.
+
+    With `version` given (e.g. "1.4"), returns the entry whose
+    featureSet version matches EXACTLY -- for deliberately pinning to a
+    specific historical version rather than always the newest one (an
+    older public_domains.json/release calibrated against it, reproducing
+    a past run, etc.). `issued` breaks a tie if more than one entry
+    happens to share that exact version. Raises naming every version
+    actually available if none match.
+
+    Without `version`, returns the newest entry, ranked by featureSet
     version first (the "|MAJOR.MINOR" suffix -- what actually changes
-    between reruns, per the catalogue's own versioning) and `issued`
-    timestamp as a tiebreak. Raises if no entry matches."""
+    between reruns, per the catalogue's own versioning) and `issued` as
+    a tiebreak. Raises if `study_name` has no entries at all either way.
+    """
     entries = [e for e in catalogue.get("entries", []) if e.get("name") == study_name]
     if not entries:
         available = sorted({e.get("name") for e in catalogue.get("entries", []) if e.get("name")})
         raise CatalogueError(f"No catalogue entry named {study_name!r} found. Available: {available}")
+
+    if version is not None:
+        wanted = _parse_version_string(version)
+        matched = [e for e in entries
+                   if _parse_version(e.get("featureSet", {}).get("url")) == wanted]
+        if not matched:
+            available_versions = sorted(
+                ".".join(map(str, v)) for v in
+                {_parse_version(e.get("featureSet", {}).get("url")) for e in entries} if v
+            )
+            raise CatalogueError(
+                f"No {study_name!r} entry with featureSet version {version!r}. "
+                f"Available version(s): {available_versions}"
+            )
+        entries = matched
+
     entries.sort(key=lambda e: (_parse_version(e.get("featureSet", {}).get("url")), _parse_issued(e)),
                  reverse=True)
     return entries[0]
 
 
-def resolve_data_dir(cdm_root_path: str | None, study_name: str = DEFAULT_STUDY_NAME) -> ResolveResult:
+def select_latest_entry(catalogue: dict, study_name: str) -> dict:
+    """Back-compat alias for select_entry(catalogue, study_name) -- the
+    newest entry, no version pin."""
+    return select_entry(catalogue, study_name)
+
+
+def resolve_data_dir(cdm_root_path: str | None, study_name: str = DEFAULT_STUDY_NAME,
+                      study_version: str | None = None) -> ResolveResult:
     """Full resolution, step by step: CDM_ROOT_PATH -> catalogue.json ->
-    newest `study_name` entry -> its on-disk folder -> part-*.parquet
-    files inside it. Never raises -- each stage is recorded as a
-    CheckStep so a caller (preflight) can print the whole checklist even
-    when an early stage fails; `result.data_dir` is set only once every
-    stage has passed."""
+    the `study_name` entry (newest, or the exact `study_version` pin if
+    given) -> its on-disk folder -> part-*.parquet files inside it.
+    Never raises -- each stage is recorded as a CheckStep so a caller
+    (preflight) can print the whole checklist even when an early stage
+    fails; `result.data_dir` is set only once every stage has passed."""
     r = ResolveResult()
 
     if not cdm_root_path:
@@ -145,16 +190,17 @@ def resolve_data_dir(cdm_root_path: str | None, study_name: str = DEFAULT_STUDY_
         r.steps.append(CheckStep(f"{CATALOGUE_FILENAME} parsed", False, f"{type(e).__name__}: {e}"))
         return r
 
+    label = f"'{study_name}'" + (f" version {study_version!r}" if study_version else "")
     try:
-        entry = select_latest_entry(catalogue, study_name)
+        entry = select_entry(catalogue, study_name, version=study_version)
     except CatalogueError as e:
-        r.steps.append(CheckStep(f"'{study_name}' entry found", False, str(e)))
+        r.steps.append(CheckStep(f"{label} entry found", False, str(e)))
         return r
     r.entry = entry
     fs_url = entry.get("featureSet", {}).get("url")
     pop_url = entry.get("population", {}).get("url")
     r.steps.append(CheckStep(
-        f"'{study_name}' entry resolved (newest)", True,
+        f"{label} entry resolved" + ("" if study_version else " (newest)"), True,
         f"id={entry.get('id')} featureSet={fs_url} population={pop_url} issued={entry.get('issued')}",
     ))
 

@@ -93,6 +93,14 @@ python main.py --cdm-root /path/to/cdm/root
                                    #   under <cdm-root>/<featureset-resource-name>/<id>/.
                                    #   Defaults to $CDM_ROOT_PATH; --preflight checks every
                                    #   stage. Mutually exclusive with --data-dir.
+python main.py --cdm-root /path/to/cdm/root --cdm-study-version 1.4
+                                   # pin --cdm-root resolution to this EXACT featureSet
+                                   #   version instead of always the newest -- e.g.
+                                   #   reproducing a run against a specific historical
+                                   #   version, or matching an artifact (public_domains.json,
+                                   #   a prior release) calibrated against an older schema.
+                                   #   --preflight names every version actually in the
+                                   #   catalogue if the pin doesn't match.
 python main.py --status             # step completion status
 python main.py --force              # rerun everything
 python main.py --force-step generate --force-step evaluate --force-step privacy

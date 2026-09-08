@@ -35,6 +35,14 @@ class PipelineConfig:
     # default; override for a different study's catalogue entry.
     catalogue_study_name: str = DEFAULT_STUDY_NAME
 
+    # Pin catalogue resolution to an EXACT featureSet version (e.g.
+    # "1.4") instead of always the newest one -- main.py
+    # --cdm-study-version. For reproducing a run against a specific
+    # historical version, or matching an artifact (public_domains.json,
+    # a prior release) calibrated against an older schema. None (default)
+    # = newest, as before this existed.
+    catalogue_study_version: str = None
+
     # Single root for every step's output, organized as
     # output_dir/<step_name>/. Lives inside the repo so everything in it
     # can be committed directly -- except the two full-data parquet files

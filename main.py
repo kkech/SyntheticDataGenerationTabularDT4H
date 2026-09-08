@@ -218,7 +218,8 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
         from pipeline.catalogue import resolve_data_dir
 
         print(f"\nResolving the data directory from the catalogue (CDM_ROOT_PATH={config.cdm_root_path}):")
-        catalogue_result = resolve_data_dir(config.cdm_root_path, config.catalogue_study_name)
+        catalogue_result = resolve_data_dir(config.cdm_root_path, config.catalogue_study_name,
+                                             config.catalogue_study_version)
         for step in catalogue_result.steps:
             check(f"  {step.name}", step.passed, step.detail)
         have_transfer = catalogue_result.ok
@@ -336,6 +337,14 @@ def main() -> None:
                               "data directory automatically -- no --data-dir/DATA_PATH to "
                               "carry by hand. Defaults to $CDM_ROOT_PATH; checked step by "
                               "step by --preflight. Mutually exclusive with --data-dir.")
+    parser.add_argument("--cdm-study-version", metavar="VERSION",
+                         help="Pin --cdm-root resolution to this EXACT featureSet version "
+                              "(e.g. '1.4') instead of always the newest one -- for "
+                              "reproducing a run against a specific historical version, or "
+                              "matching an artifact (public_domains.json, a prior release) "
+                              "calibrated against an older schema. Requires --cdm-root/"
+                              "$CDM_ROOT_PATH; --preflight names every version actually "
+                              "available in the catalogue if the pin doesn't match.")
     parser.add_argument("--metadata", metavar="PATH",
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
@@ -397,10 +406,14 @@ def main() -> None:
     cfg_kwargs = {}
     if args.extended:
         cfg_kwargs["extended_plan"] = True
+    if args.cdm_study_version and not args.cdm_root:
+        parser.error("--cdm-study-version requires --cdm-root (or $CDM_ROOT_PATH) to be set.")
     if args.data_dir:
         cfg_kwargs["transfer_folder"] = args.data_dir
     elif args.cdm_root:
         cfg_kwargs["cdm_root_path"] = args.cdm_root
+        if args.cdm_study_version:
+            cfg_kwargs["catalogue_study_version"] = args.cdm_study_version
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
     if args.drop_undeclared_columns:
@@ -446,14 +459,18 @@ def main() -> None:
     if cfg is not None and cfg.cdm_root_path:
         from pipeline.catalogue import resolve_data_dir
 
-        catalogue_result = resolve_data_dir(cfg.cdm_root_path, cfg.catalogue_study_name)
+        catalogue_result = resolve_data_dir(cfg.cdm_root_path, cfg.catalogue_study_name,
+                                             cfg.catalogue_study_version)
         if not catalogue_result.ok:
             from pipeline.catalogue import CatalogueError
 
+            version_note = f" version {cfg.catalogue_study_version!r}" if cfg.catalogue_study_version else ""
             raise CatalogueError(
-                f"Could not resolve a data directory for '{cfg.catalogue_study_name}' from "
+                f"Could not resolve a data directory for '{cfg.catalogue_study_name}'{version_note} from "
                 f"CDM_ROOT_PATH={cfg.cdm_root_path!r}:\n{catalogue_result.failure_summary()}\n"
-                f"Run `python main.py --preflight --cdm-root {cfg.cdm_root_path}` for the full check list."
+                f"Run `python main.py --preflight --cdm-root {cfg.cdm_root_path}"
+                f"{f' --cdm-study-version {cfg.catalogue_study_version}' if cfg.catalogue_study_version else ''}`"
+                f" for the full check list."
             )
         print(f"Resolved data directory from the catalogue -> {catalogue_result.data_dir}")
         cfg.transfer_folder = catalogue_result.data_dir
