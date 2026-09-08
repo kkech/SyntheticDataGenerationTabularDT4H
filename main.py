@@ -340,6 +340,21 @@ def main() -> None:
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
                               "output/profile_data/metadata.json for the downstream steps.")
+    parser.add_argument("--drop-undeclared-columns", action="store_true",
+                         help="Pinned-schema mode: before any other preprocessing transform, "
+                              "drop every raw column present in the data but not declared in "
+                              "--metadata. For deliberately ingesting data exported under a "
+                              "newer/different feature-set version using an older/different "
+                              "version's metadata as the schema of record (e.g. testing new "
+                              "data against a public_domains.json calibrated for an older "
+                              "schema). Off by default -- ordinary data/metadata drift is left "
+                              "to surface as preprocess's own warnings/hard-fail.")
+    parser.add_argument("--public-domains", metavar="PATH",
+                         help="Override the public numeric-domain declaration path (default: "
+                              "public_domains.json at the repo root). For testing DP "
+                              "synthesizers against a domain file scoped to a specific "
+                              "dataset/debug run without touching the real, "
+                              "production-reviewed file.")
     synth_filter = parser.add_mutually_exclusive_group()
     synth_filter.add_argument("--synthesizers", metavar="NAME[,NAME...]",
                          help="Restrict the generate step's run plan to only these synthesizer "
@@ -388,6 +403,10 @@ def main() -> None:
         cfg_kwargs["cdm_root_path"] = args.cdm_root
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
+    if args.drop_undeclared_columns:
+        cfg_kwargs["drop_undeclared_columns"] = True
+    if args.public_domains:
+        cfg_kwargs["public_domains_path"] = args.public_domains
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
 
     if args.synthesizers or args.dp_only:

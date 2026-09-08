@@ -55,6 +55,17 @@ class PipelineConfig:
 
     metadata_path: str = None  # defaults to <output_dir>/profile_data/metadata.json
 
+    # Opt-in (main.py --drop-undeclared-columns): drop any raw column
+    # present in the data but not declared in the metadata in use, before
+    # any other preprocessing transform. For deliberately ingesting a
+    # newer/different export with an OLDER/different version's metadata
+    # as the schema of record -- see
+    # pipeline.steps.preprocess.transforms.drop_undeclared_columns.
+    # False = leave ordinary data/metadata drift to surface as the
+    # existing validate_against_metadata warning (and, if it leaves a
+    # numeric column's nulls unencoded, preprocess's own hard-fail).
+    drop_undeclared_columns: bool = False
+
     # --- holdout split ---
     # Fraction of preprocessed rows held out BEFORE generation. The
     # generators never see these rows, which is what makes the

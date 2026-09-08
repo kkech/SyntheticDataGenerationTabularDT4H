@@ -164,6 +164,34 @@ def report_expected_nonnull_mismatches(df: pl.DataFrame) -> list[dict]:
     return results
 
 
+def drop_undeclared_columns(df: pl.DataFrame, var_meta: dict) -> tuple[pl.DataFrame, dict]:
+    """
+    Drops every column present in the data but NOT declared in var_meta,
+    pinning processing to exactly the schema var_meta describes.
+
+    Opt-in (PipelineConfig.drop_undeclared_columns), for deliberately
+    ingesting data exported under a NEWER/DIFFERENT feature-set version
+    using an OLDER/different version's metadata as the schema of record
+    (e.g. a public-domain declaration or a prior release was calibrated
+    against that older schema, and the newer export's additional columns
+    have no place in a run meant to match it). Ordinary drift between
+    data and metadata is a real signal (see validate_against_metadata's
+    warning) and is deliberately NOT silently dropped by default --
+    this only runs when explicitly requested.
+
+    Must run before combine_medications/combine_conditions: those key
+    off column NAME PATTERNS regardless of declaration, so an undeclared
+    med_admins_*/conditions_* column would otherwise still get folded
+    into a combined feature that the declared schema never described.
+    """
+    drop_cols = [c for c in df.columns if c not in var_meta]
+    if drop_cols:
+        print(f"  Dropping {len(drop_cols)} column(s) present in the data but not declared "
+              f"in the metadata in use (pinning to that schema): {drop_cols}")
+        df = df.drop(drop_cols)
+    return df, {"dropped": drop_cols}
+
+
 # --- type-driven cleanup ---
 
 def flatten_array_columns(df: pl.DataFrame, var_meta: dict) -> tuple[pl.DataFrame, dict]:

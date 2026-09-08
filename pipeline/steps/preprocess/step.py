@@ -48,6 +48,10 @@ class PreprocessStep(PipelineStep):
         print("Validating against metadata...")
         summary["metadata_validation"] = t.validate_against_metadata(df, var_meta)
 
+        if config.drop_undeclared_columns:
+            print("Dropping columns undeclared in the metadata in use (pinned-schema mode)...")
+            df, summary["undeclared_columns_dropped"] = t.drop_undeclared_columns(df, var_meta)
+
         print("Checking expected non-null pairs...")
         summary["expected_nonnull_checks"] = t.report_expected_nonnull_mismatches(df)
 
@@ -196,6 +200,10 @@ class PreprocessStep(PipelineStep):
             lines.append(f"- ⚠️ declared but missing from data: {s['metadata_validation']['declared_but_missing_from_data']}")
         if s["metadata_validation"]["in_data_but_not_declared"]:
             lines.append(f"- ⚠️ in data but not declared: {s['metadata_validation']['in_data_but_not_declared']}")
+        if s.get("undeclared_columns_dropped") is not None:
+            lines.append(f"- Pinned-schema mode: dropped {len(s['undeclared_columns_dropped']['dropped'])} "
+                         f"undeclared column(s) before any other transform: "
+                         f"{s['undeclared_columns_dropped']['dropped']}")
 
         lines += ["", "## Expected non-null pair checks"]
         for c in s["expected_nonnull_checks"]:
