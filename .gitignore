@@ -35,3 +35,5 @@ logs/
 backups/
 catalogue.json
 metadata_new.json
+metadata_icrc.json
+metadata_2.2.json
