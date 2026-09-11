@@ -184,6 +184,22 @@ class PipelineConfig:
     # bounding a truly wedged fit.
     synthesizer_timeout_seconds: int = 21600
 
+    # Opt-in (main.py --parallel N): run up to N generate-step runs
+    # concurrently instead of one at a time. Each run gets its OWN OS
+    # process (spawned fresh, never forked -- forking after CUDA is
+    # already initialized in the parent hands children a broken CUDA
+    # context), so per-run GPU isolation and the SIGALRM fit/sample
+    # timeout above both keep working exactly as in the sequential case.
+    # 1 (default) is the original sequential loop, byte-for-byte.
+    #
+    # There is no auto-detected cap: measured DP runs here used
+    # ~0.5-1 GB of GPU memory each, but that is this repo's data/model
+    # sizes, not a law -- pick N against --preflight's free-memory line
+    # divided by your own observed per-run cost (plus some headroom for
+    # each worker's fixed CUDA-context overhead), and remember mst/aim
+    # are CPU/RAM-bound, not GPU-bound, so they compete for cores instead.
+    parallel_jobs: int = 1
+
     # --- utility step (TSTR) ---
     # None = auto-select up to utility_max_targets BOOLEAN outcome
     # variables from the feature-set metadata (best class balance first).

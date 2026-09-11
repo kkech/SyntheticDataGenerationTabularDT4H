@@ -34,6 +34,27 @@ from pipeline.steps.generate.reproducibility import provenance
 from pipeline.steps.generate.synthesizers import build_synthesizer
 
 
+def _run_one_isolated(step, spec, train, real, constants, config, out_dir, n_rows,
+                       column_subsets):
+    """Module-level so it can be pickled by name for a spawned worker
+    process (see GenerateStep._run_plan_parallel). Captures the run's
+    stdout/stderr into a buffer instead of writing them directly: with
+    several of these running at once, each writing to the real stdout
+    would interleave mid-run, turning the log into an unreadable shuffle
+    of several models' output. Returning the captured text lets the
+    parent process print it as one contiguous block when the run
+    finishes, keeping the existing --log tee (which only wraps the
+    parent's sys.stdout) intact."""
+    import contextlib
+    import io
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(buf):
+        record = step._run_one(spec, train, real, constants, config, out_dir, n_rows,
+                               column_subsets)
+    return record, buf.getvalue()
+
+
 class GenerateStep(PipelineStep):
     name = "generate"
 
@@ -107,17 +128,21 @@ class GenerateStep(PipelineStep):
             "runs": [],
         }
 
-        for i, spec in enumerate(plan, 1):
-            print(f"\n[run {i}/{len(plan)}]", end="")
-            summary["runs"].append(
-                self._run_one(spec, train, real, constants, config, out_dir, n_rows,
-                              column_subsets)
-            )
-            # Rewrite the summary after every run rather than once at the
-            # end: a plan this long must not lose the results already
-            # obtained if a later model hangs or the process is
-            # interrupted.
-            self._write_summary(summary, out_dir, quiet=True)
+        if config.parallel_jobs and config.parallel_jobs > 1:
+            self._run_plan_parallel(plan, train, real, constants, config, out_dir, n_rows,
+                                    column_subsets, summary)
+        else:
+            for i, spec in enumerate(plan, 1):
+                print(f"\n[run {i}/{len(plan)}]", end="")
+                summary["runs"].append(
+                    self._run_one(spec, train, real, constants, config, out_dir, n_rows,
+                                  column_subsets)
+                )
+                # Rewrite the summary after every run rather than once at
+                # the end: a plan this long must not lose the results
+                # already obtained if a later model hangs or the process
+                # is interrupted.
+                self._write_summary(summary, out_dir, quiet=True)
 
         self._write_summary(summary, out_dir)
 
@@ -485,6 +510,55 @@ class GenerateStep(PipelineStep):
             print(traceback.format_exc())
 
         return record
+
+    def _run_plan_parallel(self, plan, train, real, constants, config, out_dir, n_rows,
+                           column_subsets, summary) -> None:
+        """Same runs as the sequential loop, up to config.parallel_jobs
+        at once. Each run gets its own SPAWNED process -- never forked --
+        because forking after CUDA is already initialized in this
+        process (--preflight/_report_environment already touched
+        torch.cuda) hands the child a broken CUDA context; spawn starts
+        clean. Results are still appended and written from THIS process
+        only, in the order runs finish, so DT4H_Generation_Summary.json
+        never has two writers and stays crash-safe exactly as before."""
+        import multiprocessing
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+
+        if not plan:
+            return
+        n_workers = min(config.parallel_jobs, len(plan))
+        print(f"\nRunning {len(plan)} run(s) with up to {n_workers} concurrent worker "
+              f"process(es) -- each its own CUDA context, sharing this machine's GPU memory. "
+              f"Per-run output is printed as one block when that run finishes, not live.")
+        ctx = multiprocessing.get_context("spawn")
+        with ProcessPoolExecutor(max_workers=n_workers, mp_context=ctx) as pool:
+            futures = {
+                pool.submit(_run_one_isolated, self, spec, train, real, constants, config,
+                           out_dir, n_rows, column_subsets): spec
+                for spec in plan
+            }
+            done = 0
+            for future in as_completed(futures):
+                spec = futures[future]
+                run_id = spec["run_id"]
+                done += 1
+                try:
+                    record, captured = future.result()
+                except Exception as e:
+                    # A worker PROCESS crashing outright (e.g. OOM-killed
+                    # by the kernel, which also breaks the whole pool for
+                    # every other still-pending future) never reaches
+                    # _run_one's own try/except, so it needs the same
+                    # "keep going, record the failure" treatment here.
+                    record = {"run_id": run_id, "synthesizer": spec.get("record_as", spec["synthesizer"]),
+                              "seed": spec.get("seed", config.seed), "epsilon": spec.get("epsilon"),
+                              "status": "failed", "error_type": type(e).__name__, "error": str(e)[:500]}
+                    captured = ""
+                if captured:
+                    print(captured, end="" if captured.endswith("\n") else "\n")
+                print(f"[{done}/{len(plan)} done] {run_id}: {record['status']}")
+                summary["runs"].append(record)
+                self._write_summary(summary, out_dir, quiet=True)
 
     @staticmethod
     def _save_generator(synth, path: str) -> None:

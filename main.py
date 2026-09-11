@@ -431,6 +431,13 @@ def main() -> None:
                               "in the resolved plan> -- derived from each synthesizer's is_dp "
                               "flag in the registry (pipeline/steps/generate/synthesizers), not "
                               "a hardcoded list. Mutually exclusive with --synthesizers.")
+    parser.add_argument("--parallel", metavar="N", type=int, default=1,
+                         help="Run up to N generate-step runs concurrently, each in its own "
+                              "spawned process (own CUDA context, own fit/sample timeout). "
+                              "Default 1 = sequential (unchanged). DP runs measured in this "
+                              "repo cost ~0.5-1 GB GPU memory each, but check --preflight's "
+                              "free-memory line yourself before picking N -- mst/aim are "
+                              "CPU/RAM-bound instead of GPU-bound, so they compete for cores.")
     parser.add_argument("--status", action="store_true", help="Print step-completion status and exit.")
     parser.add_argument("--min-free-gb", type=float, default=None,
                          help="Override the preflight free-disk requirement (GB). The v3 "
@@ -473,6 +480,10 @@ def main() -> None:
         cfg_kwargs["public_domains_path"] = args.public_domains
     if args.clip_to_domain:
         cfg_kwargs["clip_to_domain"] = True
+    if args.parallel != 1:
+        if args.parallel < 1:
+            parser.error("--parallel must be >= 1.")
+        cfg_kwargs["parallel_jobs"] = args.parallel
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
 
     if args.synthesizers or args.dp_only:
