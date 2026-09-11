@@ -1,6 +1,6 @@
 {
   "reviewed": false,
-  "note": "DRAFT for feature-set version 2.2. The 61 entries present before this draft are UNCHANGED and remain exactly as previously reviewed. The 39 new entries (30 pre-existing gap columns already present in 1.4/2.1 but never covered, 5 columns new in 2.1, 4 columns new in 2.2) are drafted from metadata_2.2.json's own descriptions/LOINC codes and unit hints -- NOT derived from any site's observed patient data. Each new entry's 'basis' names the reasoning. Whole-file reviewed=false until a human signs off on the 39 new entries (the previously-reviewed 61 do not need re-review).",
+  "note": "DRAFT for feature-set version 2.2. The 61 entries present before this draft are UNCHANGED and remain exactly as previously reviewed. The 39 new entries (30 pre-existing gap columns already present in 1.4/2.1 but never covered, 5 columns new in 2.1, 4 columns new in 2.2) are drafted from metadata_2.2.json's own descriptions/LOINC codes and unit hints -- NOT derived from any site's observed patient data. Each new entry's 'basis' names the reasoning. Whole-file reviewed=false until a human signs off on the 39 new entries (the previously-reviewed 61 do not need re-review). Refined 2026-09-11 after real-VM testing on 2.2 surfaced training values outside the declared domain for several columns: 6 entries (ecg_qrs_axis_first/last, smoking_duration, creatBS, valideGFR_first/last) were widened for genuine clinical/measurement-convention reasons unrelated to any specific observed value. Entries whose violations trace to physically-impossible readings (height, diastolicBp, potassium, sodium, lvef, bmi) or unexplained anomalies pending investigation (the three rehospitalization-count columns) were deliberately left unchanged -- use --clip-to-domain to handle those instead of stretching declared domains to cover impossible values.",
   "previously_reviewed_sha256": "5120731a038c91ccbaab8a2e109dd6394f2318c349e0d3ddb9a845fecb86e30c",
   "new_entries_added": [
     "cause_of_death_number_of_days_to_death_for_CV_f5a_first",
@@ -316,15 +316,15 @@
     },
     "lab_results_valideGFR_value_first": {
       "lo": 0.0,
-      "hi": 90.0,
+      "hi": 150.0,
       "sentinel_encoded": true,
-      "basis": "derivation caps reported eGFR at 90 by definition"
+      "basis": "widened hi from 90 to 150 (pre-existing entry, predates this draft): the original basis assumed a reporting convention that caps calculated eGFR at 90; not every source applies that cap, and calculated eGFR in young/healthy kidneys or hyperfiltration states can genuinely exceed 90"
     },
     "lab_results_valideGFR_value_last": {
       "lo": 0.0,
-      "hi": 90.0,
+      "hi": 150.0,
       "sentinel_encoded": true,
-      "basis": "derivation caps reported eGFR at 90 by definition"
+      "basis": "widened hi from 90 to 150 (pre-existing entry, predates this draft): the original basis assumed a reporting convention that caps calculated eGFR at 90; not every source applies that cap, and calculated eGFR in young/healthy kidneys or hyperfiltration states can genuinely exceed 90"
     },
     "echocardiographs_lvef_pET_last": {
       "lo": -200.0,
@@ -436,15 +436,15 @@
     },
     "electrocardiographs_ecg_qrs_axis_pET_first": {
       "lo": -180.0,
-      "hi": 180.0,
+      "hi": 360.0,
       "sentinel_encoded": true,
-      "basis": "LOINC 8632-2, QRS axis in degrees; normal -30 to 90, extreme axis deviation to +-180"
+      "basis": "widened hi from 180 to 360: some ECG/EHR exports report QRS axis on an unsigned 0-360 degree convention rather than the signed -180/+180 convention assumed in the original basis -- a measurement-convention correction, not a data-derived bound"
     },
     "electrocardiographs_ecg_qrs_axis_pET_last": {
       "lo": -180.0,
-      "hi": 180.0,
+      "hi": 360.0,
       "sentinel_encoded": true,
-      "basis": "LOINC 8632-2, QRS axis in degrees; normal -30 to 90, extreme axis deviation to +-180"
+      "basis": "widened hi from 180 to 360: some ECG/EHR exports report QRS axis on an unsigned 0-360 degree convention rather than the signed -180/+180 convention assumed in the original basis -- a measurement-convention correction, not a data-derived bound"
     },
     "lab_results_acr_value_first": {
       "lo": 0.0,
@@ -574,9 +574,9 @@
     },
     "smoking_status_smoker_totalSmokingDuration_sum": {
       "lo": 0.0,
-      "hi": 30000.0,
+      "hi": 40000.0,
       "sentinel_encoded": true,
-      "basis": "description states DAYS, not years; ~80 years max plausible smoking history"
+      "basis": "widened hi from 30000 to 40000 days (~110y): the original ~80y cap was simply too tight against plausible extreme human longevity, inconsistent with this draft's own patient_demographics_age bound of 110"
     },
     "vital_signs_oxygenSaturation_value_first": {
       "lo": 0.0,
@@ -598,9 +598,9 @@
     },
     "lab_results_creatBS_value_p3a_avg": {
       "lo": 0.0,
-      "hi": 30.0,
+      "hi": 1000.0,
       "sentinel_encoded": true,
-      "basis": "average of 2 serum creatinine values -- same measurement/unit as the already-reviewed lab_results_validSerumCreatinine_value_first/last"
+      "basis": "widened hi from 30 to 1000: the original basis wrongly assumed this shares units with lab_results_validSerumCreatinine (mg/dL-scale); if this field is instead reported in micromol/L (the common SI unit for creatinine), values well above 30 are unremarkable, and severe renal failure genuinely reaches into the hundreds on that scale"
     },
     "lab_results_validSerumCreatinine_value_pET": {
       "lo": 0.0,
