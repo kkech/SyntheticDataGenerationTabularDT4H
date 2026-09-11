@@ -308,6 +308,7 @@ class GenerateStep(PipelineStep):
             params["public_domains_path"] = config.public_domains_path
             params["numeric_encoding_path"] = os.path.join(
                 config.step_dir("preprocess"), NUMERIC_ENCODING_FILENAME)
+            params["clip_to_domain"] = config.clip_to_domain
 
         # Width-limited runs train on an importance subset: "top" is the
         # standard AIM width, an integer selects that top-k.
