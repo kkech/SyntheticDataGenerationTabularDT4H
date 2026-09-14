@@ -385,6 +385,16 @@ def main() -> None:
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
                               "output/profile_data/metadata.json for the downstream steps.")
+    parser.add_argument("--parallel", metavar="N", type=int, default=1,
+                         help="Run up to N generate-step runs concurrently, each in its own "
+                              "spawned process (own CUDA context, own fit/sample timeout -- a "
+                              "run that hits its timeout is still just one 'failed' record; "
+                              "the rest of the plan and the pipeline after generate proceed "
+                              "same as sequential). Default 1 = sequential (unchanged). DP "
+                              "runs measured in this repo cost ~0.5-1 GB GPU memory each, but "
+                              "check --preflight's free-memory line yourself before picking "
+                              "N -- mst/aim are CPU/RAM-bound instead of GPU-bound, so they "
+                              "compete for cores.")
     parser.add_argument("--status", action="store_true", help="Print step-completion status and exit.")
     parser.add_argument("--min-free-gb", type=float, default=None,
                          help="Override the preflight free-disk requirement (GB). The v3 "
@@ -420,6 +430,10 @@ def main() -> None:
         cfg_kwargs["extended_plan"] = True
     if args.clip_to_domain:
         cfg_kwargs["clip_to_domain"] = True
+    if args.parallel != 1:
+        if args.parallel < 1:
+            parser.error("--parallel must be >= 1.")
+        cfg_kwargs["parallel_jobs"] = args.parallel
     if args.data_dir:
         cfg_kwargs["transfer_folder"] = args.data_dir
     if args.metadata:
