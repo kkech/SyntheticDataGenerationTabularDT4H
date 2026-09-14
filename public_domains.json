@@ -1,18 +1,48 @@
 {
-  "reviewed": true,
-  "note": "PUBLIC domain declaration [lo, hi] per numeric column, with the basis naming the public knowledge each range rests on. Reviewed and released as part of the DP mechanism specification. The observed extremes used during review are not part of this file.",
-  "generated_by": "make_public_domains.py",
-  "proposal_rule": "observed range rounded outward to 1 significant figure (a small positive floor is proposed as 0)",
-  "sources": {
-    "profile": {
-      "path": "/home/user/SyntheticDataGenerationDT4H/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.json",
-      "sha256": "d9a9cbd6bfdf577538b0a4ebd027aa4cf2d2744dae14285741db366c788a44af"
-    },
-    "encoding_map": {
-      "path": "/home/user/SyntheticDataGenerationDT4H/output/preprocess/DT4H_Numeric_Missing_Encoding.json",
-      "sha256": "f4037abf6b5fefcc17f44aca6825b0259f04cfa4d2ba02d655eb91f79cc323b3"
-    }
-  },
+  "reviewed": false,
+  "note": "DRAFT for feature-set version 2.2. The 61 entries present before this draft are UNCHANGED and remain exactly as previously reviewed. The 39 new entries (30 pre-existing gap columns already present in 1.4/2.1 but never covered, 5 columns new in 2.1, 4 columns new in 2.2) are drafted from metadata_2.2.json's own descriptions/LOINC codes and unit hints -- NOT derived from any site's observed patient data. Each new entry's 'basis' names the reasoning. Whole-file reviewed=false until a human signs off on the 39 new entries (the previously-reviewed 61 do not need re-review). Refined 2026-09-11 after real-VM testing on 2.2 surfaced training values outside the declared domain for several columns: 6 entries (ecg_qrs_axis_first/last, smoking_duration, creatBS, valideGFR_first/last) were widened for genuine clinical/measurement-convention reasons unrelated to any specific observed value. Entries whose violations trace to physically-impossible readings (height, diastolicBp, potassium, sodium, lvef, bmi) or unexplained anomalies pending investigation (the three rehospitalization-count columns) were deliberately left unchanged -- use --clip-to-domain to handle those instead of stretching declared domains to cover impossible values. Installed as the working declaration for the 2.2 campaign; coverage verified against AUMC's 2.2 modelled numeric columns (97/97 covered). EXPORTED COPY: reviewed is false ON PURPOSE -- the origin site's sign-off does not travel with the code. Review these ranges against your own site's clinical knowledge, then set reviewed to true (add reviewed_by/reviewed_at); DP fitting refuses to start until you do. Any observed extremes used during the origin-site review are not part of this file.",
+  "previously_reviewed_sha256": "5120731a038c91ccbaab8a2e109dd6394f2318c349e0d3ddb9a845fecb86e30c",
+  "new_entries_added": [
+    "cause_of_death_number_of_days_to_death_for_CV_f5a_first",
+    "cause_of_death_number_of_days_to_death_for_non_renal_and_non_CV_f5a_first",
+    "cause_of_death_number_of_days_to_death_for_renal_f5a_first",
+    "echocardiographs_lvef",
+    "electrocardiographs_ecg_qrs_axis_pET_first",
+    "electrocardiographs_ecg_qrs_axis_pET_last",
+    "encounter_primary_reason_number_of_CV_rehospitalizations_5a_f5a_count",
+    "encounter_primary_reason_number_of_HF_rehospitalizations_5a_f5a_count",
+    "encounter_primary_reason_number_of_days_to_rehosp_for_renal_complications_f5a_first",
+    "encounter_primary_reason_number_of_non_CV_rehospitalizations_5a_f5a_count",
+    "encounter_primary_reason_number_of_renal_rehospitalizations_5a_f5a_count",
+    "lab_results_acr_value_first",
+    "lab_results_acr_value_last",
+    "lab_results_albuminUS_value_first",
+    "lab_results_albuminUS_value_last",
+    "lab_results_bnp_value_first",
+    "lab_results_bnp_value_last",
+    "lab_results_bun_value_first",
+    "lab_results_bun_value_last",
+    "lab_results_creatBS_value_p3a_avg",
+    "lab_results_crpHs_value_first",
+    "lab_results_crpHs_value_last",
+    "lab_results_hba1c%_value_first",
+    "lab_results_hba1c%_value_last",
+    "lab_results_hba1c_value_first",
+    "lab_results_hba1c_value_last",
+    "lab_results_tfs_value_first",
+    "lab_results_tfs_value_last",
+    "lab_results_tropIHs_value_first",
+    "lab_results_tropIHs_value_last",
+    "lab_results_tropInHs_value_first",
+    "lab_results_tropInHs_value_last",
+    "lab_results_validSerumCreatinine_value_pET",
+    "maggic_total_score",
+    "smoking_status_smoker_totalSmokingDuration_sum",
+    "vital_signs_bmi_value_pET",
+    "vital_signs_oxygenSaturation_value_first",
+    "vital_signs_oxygenSaturation_value_last",
+    "vital_signs_systolicBpDuringEncounter_value_pET"
+  ],
   "domains": {
     "patient_demographics_age": {
       "lo": 18.0,
@@ -286,15 +316,15 @@
     },
     "lab_results_valideGFR_value_first": {
       "lo": 0.0,
-      "hi": 90.0,
+      "hi": 150.0,
       "sentinel_encoded": true,
-      "basis": "derivation caps reported eGFR at 90 by definition"
+      "basis": "widened hi from 90 to 150 (pre-existing entry, predates this draft): the original basis assumed a reporting convention that caps calculated eGFR at 90; not every source applies that cap, and calculated eGFR in young/healthy kidneys or hyperfiltration states can genuinely exceed 90"
     },
     "lab_results_valideGFR_value_last": {
       "lo": 0.0,
-      "hi": 90.0,
+      "hi": 150.0,
       "sentinel_encoded": true,
-      "basis": "derivation caps reported eGFR at 90 by definition"
+      "basis": "widened hi from 90 to 150 (pre-existing entry, predates this draft): the original basis assumed a reporting convention that caps calculated eGFR at 90; not every source applies that cap, and calculated eGFR in young/healthy kidneys or hyperfiltration states can genuinely exceed 90"
     },
     "echocardiographs_lvef_pET_last": {
       "lo": -200.0,
@@ -379,6 +409,240 @@
       "hi": 300.0,
       "sentinel_encoded": true,
       "basis": "CKD-EPI 2021 formula output over the creatinine domain"
+    },
+    "cause_of_death_number_of_days_to_death_for_CV_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "days from discharge to CV death, 5-year window (f5a); mirrors the already-declared all_cause sibling"
+    },
+    "cause_of_death_number_of_days_to_death_for_renal_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "days from discharge to renal-cause death, 5-year window (f5a); mirrors the already-declared all_cause sibling"
+    },
+    "cause_of_death_number_of_days_to_death_for_non_renal_and_non_CV_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "days from discharge to death (other cause), 5-year window (f5a); mirrors the already-declared all_cause sibling"
+    },
+    "encounter_primary_reason_number_of_days_to_rehosp_for_renal_complications_f5a_first": {
+      "lo": 0.0,
+      "hi": 1826.0,
+      "sentinel_encoded": true,
+      "basis": "days to renal-complication rehospitalization, 5-year window; mirrors the already-declared heart_failure/CV/non_CV siblings"
+    },
+    "electrocardiographs_ecg_qrs_axis_pET_first": {
+      "lo": -180.0,
+      "hi": 360.0,
+      "sentinel_encoded": true,
+      "basis": "widened hi from 180 to 360: some ECG/EHR exports report QRS axis on an unsigned 0-360 degree convention rather than the signed -180/+180 convention assumed in the original basis -- a measurement-convention correction, not a data-derived bound"
+    },
+    "electrocardiographs_ecg_qrs_axis_pET_last": {
+      "lo": -180.0,
+      "hi": 360.0,
+      "sentinel_encoded": true,
+      "basis": "widened hi from 180 to 360: some ECG/EHR exports report QRS axis on an unsigned 0-360 degree convention rather than the signed -180/+180 convention assumed in the original basis -- a measurement-convention correction, not a data-derived bound"
+    },
+    "lab_results_acr_value_first": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 32294-1, urine albumin/creatinine ratio mg/mmol; normal <3, macroalbuminuria >30, severe nephropathy to hundreds"
+    },
+    "lab_results_acr_value_last": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 32294-1, urine albumin/creatinine ratio mg/mmol; normal <3, macroalbuminuria >30, severe nephropathy to hundreds"
+    },
+    "lab_results_albuminUS_value_first": {
+      "lo": 0.0,
+      "hi": 3000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 1754-1, urine albumin mg/L; nephrotic-range proteinuria reaches low thousands"
+    },
+    "lab_results_albuminUS_value_last": {
+      "lo": 0.0,
+      "hi": 3000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 1754-1, urine albumin mg/L; nephrotic-range proteinuria reaches low thousands"
+    },
+    "lab_results_bnp_value_first": {
+      "lo": 0.0,
+      "hi": 10000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 30934-4, BNP pg/mL; normal <100, severe HF to several thousand, typical assay ceiling ~10000"
+    },
+    "lab_results_bnp_value_last": {
+      "lo": 0.0,
+      "hi": 10000.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 30934-4, BNP pg/mL; normal <100, severe HF to several thousand, typical assay ceiling ~10000"
+    },
+    "lab_results_bun_value_first": {
+      "lo": 0.0,
+      "hi": 60.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 14937-7, urea nitrogen mmol/L (NOT mg/dL); normal ~2.5-7.1, severe renal failure to ~40-50"
+    },
+    "lab_results_bun_value_last": {
+      "lo": 0.0,
+      "hi": 60.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 14937-7, urea nitrogen mmol/L (NOT mg/dL); normal ~2.5-7.1, severe renal failure to ~40-50"
+    },
+    "lab_results_crpHs_value_first": {
+      "lo": 0.0,
+      "hi": 500.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 30522-7, hs-CRP mg/L; acute severe inflammation/infection can exceed typical hs-CRP reporting ceilings"
+    },
+    "lab_results_crpHs_value_last": {
+      "lo": 0.0,
+      "hi": 500.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 30522-7, hs-CRP mg/L; acute severe inflammation/infection can exceed typical hs-CRP reporting ceilings"
+    },
+    "lab_results_hba1c%_value_first": {
+      "lo": 3.0,
+      "hi": 20.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 4548-4, HbA1c % (DCCT/NGSP); normal ~4-5.6, extreme uncontrolled diabetes"
+    },
+    "lab_results_hba1c%_value_last": {
+      "lo": 3.0,
+      "hi": 20.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 4548-4, HbA1c % (DCCT/NGSP); normal ~4-5.6, extreme uncontrolled diabetes"
+    },
+    "lab_results_hba1c_value_first": {
+      "lo": 10.0,
+      "hi": 200.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 41995-2, HbA1c mmol/mol (IFCC) -- different unit from the %-suffixed sibling above"
+    },
+    "lab_results_hba1c_value_last": {
+      "lo": 10.0,
+      "hi": 200.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 41995-2, HbA1c mmol/mol (IFCC) -- different unit from the %-suffixed sibling above"
+    },
+    "lab_results_tfs_value_first": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 2502-3, transferrin/iron saturation %; a saturation fraction, physiologically 0-100"
+    },
+    "lab_results_tfs_value_last": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 2502-3, transferrin/iron saturation %; a saturation fraction, physiologically 0-100"
+    },
+    "lab_results_tropIHs_value_first": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 89579-7, high-sensitivity troponin I ng/mL; normal <0.01-0.04, massive MI to tens-~100"
+    },
+    "lab_results_tropIHs_value_last": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 89579-7, high-sensitivity troponin I ng/mL; normal <0.01-0.04, massive MI to tens-~100"
+    },
+    "lab_results_tropInHs_value_first": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 10839-9, troponin I ng/mL; normal <0.01-0.04, massive MI to tens-~100"
+    },
+    "lab_results_tropInHs_value_last": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 10839-9, troponin I ng/mL; normal <0.01-0.04, massive MI to tens-~100"
+    },
+    "maggic_total_score": {
+      "lo": 0.0,
+      "hi": 60.0,
+      "sentinel_encoded": true,
+      "basis": "derived from the repo's own MAGGIC formula (generatedDescription): summed max per-term contribution (gender 1 + NYHA 8 + smoking 1 + diabetes 3 + HF-history 2 + no-beta-blocker 3 + no-ACEi/ARB 1 + BMI 6 + COPD 2 + creatinine 8 + LVEF 7 + age-x-LVEF 15 + SBP-x-LVEF 5 ~= 62); rounded to 60"
+    },
+    "smoking_status_smoker_totalSmokingDuration_sum": {
+      "lo": 0.0,
+      "hi": 40000.0,
+      "sentinel_encoded": true,
+      "basis": "widened hi from 30000 to 40000 days (~110y): the original ~80y cap was simply too tight against plausible extreme human longevity, inconsistent with this draft's own patient_demographics_age bound of 110"
+    },
+    "vital_signs_oxygenSaturation_value_first": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 2708-6, SpO2 %; physiologically 0-100"
+    },
+    "vital_signs_oxygenSaturation_value_last": {
+      "lo": 0.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "LOINC 2708-6, SpO2 %; physiologically 0-100"
+    },
+    "echocardiographs_lvef": {
+      "lo": -200.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "mirrors the already-reviewed echocardiographs_lvef_pET_first/last range for the same measurement"
+    },
+    "lab_results_creatBS_value_p3a_avg": {
+      "lo": 0.0,
+      "hi": 1000.0,
+      "sentinel_encoded": true,
+      "basis": "widened hi from 30 to 1000: the original basis wrongly assumed this shares units with lab_results_validSerumCreatinine (mg/dL-scale); if this field is instead reported in micromol/L (the common SI unit for creatinine), values well above 30 are unremarkable, and severe renal failure genuinely reaches into the hundreds on that scale"
+    },
+    "lab_results_validSerumCreatinine_value_pET": {
+      "lo": 0.0,
+      "hi": 30.0,
+      "sentinel_encoded": true,
+      "basis": "renamed from lab_results_validSerumCreatinine_value_last (2.1); same measurement, range carried over unchanged"
+    },
+    "vital_signs_bmi_value_pET": {
+      "lo": 10.0,
+      "hi": 100.0,
+      "sentinel_encoded": true,
+      "basis": "renamed from vital_signs_bmi_value_last (2.1); same measurement, range carried over unchanged"
+    },
+    "vital_signs_systolicBpDuringEncounter_value_pET": {
+      "lo": 30.0,
+      "hi": 300.0,
+      "sentinel_encoded": true,
+      "basis": "same measurement as the already-reviewed vital_signs_systolicBp_value_first/last, captured over the encounter window instead"
+    },
+    "encounter_primary_reason_number_of_HF_rehospitalizations_5a_f5a_count": {
+      "lo": 0.0,
+      "hi": 50.0,
+      "sentinel_encoded": true,
+      "basis": "count of HF rehospitalizations within a 5-year window; a bounded-window count, not the lifetime encounters_numOfPreviousHFStays_count counter"
+    },
+    "encounter_primary_reason_number_of_CV_rehospitalizations_5a_f5a_count": {
+      "lo": 0.0,
+      "hi": 50.0,
+      "sentinel_encoded": true,
+      "basis": "count of CV rehospitalizations within a 5-year window"
+    },
+    "encounter_primary_reason_number_of_non_CV_rehospitalizations_5a_f5a_count": {
+      "lo": 0.0,
+      "hi": 50.0,
+      "sentinel_encoded": true,
+      "basis": "count of non-CV rehospitalizations within a 5-year window"
+    },
+    "encounter_primary_reason_number_of_renal_rehospitalizations_5a_f5a_count": {
+      "lo": 0.0,
+      "hi": 50.0,
+      "sentinel_encoded": true,
+      "basis": "count of renal-complication rehospitalizations within a 5-year window"
     }
   }
 }

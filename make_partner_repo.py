@@ -43,6 +43,7 @@ DEFAULT_DEST = os.path.join(os.path.dirname(REPO), "SyntheticDataGenerationTabul
 # nothing else. Additions here are deliberate, reviewed decisions.
 ALLOWLIST = (
     "pipeline",
+    "tests",
     "main.py",
     "run_job.sh",
     "release_gate.py",
@@ -51,6 +52,7 @@ ALLOWLIST = (
     "conditional_demo.py",
     "backup_results.py",
     "make_public_domains.py",
+    "make_derived_columns_map.py",
     "make_partner_repo.py",     # so the export procedure itself is shared
     "respell_released_files.py",
     "c2st_diagnose.py",
@@ -115,14 +117,30 @@ def export(dest: str) -> None:
                 if k in spec:
                     del spec[k]
                     removed += 1
-        d["note"] = ("PUBLIC domain declaration [lo, hi] per numeric column, with the "
-                     "basis naming the public knowledge each range rests on. Reviewed "
-                     "and released as part of the DP mechanism specification. The "
-                     "observed extremes used during review are not part of this file.")
+        # The review that makes the epsilon claim sound is a SITE act, not
+        # a repo property: the origin site's sign-off must not travel with
+        # the code and pre-approve every fresh clone. Export with
+        # reviewed=false so each site's DP fits refuse to start until
+        # someone there has reviewed the ranges and set it true.
+        d["reviewed"] = False
+        d.pop("reviewed_by", None)
+        d.pop("reviewed_at", None)
+        scrub_note = ("EXPORTED COPY: reviewed is false ON PURPOSE -- the origin "
+                      "site's sign-off does not travel with the code. Review these "
+                      "ranges against your own site's clinical knowledge, then set "
+                      "reviewed to true (add reviewed_by/reviewed_at); DP fitting "
+                      "refuses to start until you do. Any observed extremes used "
+                      "during the origin-site review are not part of this file.")
+        # Preserve the declaration's own documentation (entry provenance,
+        # version history); the scrub addendum is appended, not a
+        # replacement, and never duplicated on re-export.
+        existing = d.get("note", "")
+        if scrub_note not in existing:
+            d["note"] = (existing + " " + scrub_note).strip()
         with open(pd_path, "w") as f:
             json.dump(d, f, indent=2)
-        print(f"  scrubbed public_domains.json ({removed} observed_* value(s) removed, "
-              f"reviewed={d.get('reviewed')})")
+        print(f"  scrubbed public_domains.json ({removed} observed_* value(s) removed; "
+              f"reviewed reset to false -- each site signs off for itself)")
 
     cfg_path = os.path.join(dest, "pipeline", "config.py")
     with open(cfg_path) as f:
