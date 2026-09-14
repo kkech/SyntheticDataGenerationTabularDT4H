@@ -83,6 +83,7 @@ import os
 
 import pandas as pd
 
+from pipeline.common.profiling import coarsen_extreme
 from pipeline.steps.generate.synthesizers.base import Synthesizer
 
 #: Same gap fraction the preprocessing sentinel used
@@ -99,6 +100,17 @@ _REVIEW_INSTRUCTIONS = (
     "\"reviewed\": true). Data-derived bounds are a formal DP violation, so this "
     "is a hard stop, not a warning."
 )
+
+
+def coarse_observed_span(r: dict) -> str:
+    """A violating column's observed extremes for prints, logs, and
+    exception text -- rounded OUTWARD to the profiler's own 2-significant-
+    figure disclosure rule (coarsen_extreme), never the exact values:
+    a per-column extreme is one patient's value, and run output travels
+    further than enclaves (this project's own logs end up in git)."""
+    lo = coarsen_extreme(float(r["col_min"]), "floor")
+    hi = coarsen_extreme(float(r["col_max"]), "ceil")
+    return f"[~{lo:g}, ~{hi:g}]"
 
 
 def sentinel_public_bound(pub_lo: float, pub_hi: float) -> float:
@@ -340,7 +352,7 @@ class _SmartNoiseBase(Synthesizer):
             # bound -- unless explicitly requested (--clip-to-domain),
             # clipped to the PUBLIC bound itself, never the data's own.
             violations = [
-                f"{c}: training values span [{r['col_min']:g}, {r['col_max']:g}] but the "
+                f"{c}: training values span {coarse_observed_span(r)} (coarsened) but the "
                 f"public bound is [{r['lower']:g}, {r['pub_hi']:g}]"
                 for c, r in violating.items()
             ]
@@ -360,7 +372,7 @@ class _SmartNoiseBase(Synthesizer):
                 clip_report[c] = n
                 print(f"  Clipped {n} of {r['n_total']} cell(s) in '{c}' to its declared "
                       f"public domain [{r['lower']:g}, {r['pub_hi']:g}] "
-                      f"(observed [{r['col_min']:g}, {r['col_max']:g}]).")
+                      f"(observed {coarse_observed_span(r)}, coarsened).")
             out[c] = (BinTransformer(lower=r["lower"], upper=r["pub_hi"])
                       if self.transform_style == "cube"
                       else MinMaxTransformer(lower=r["lower"], upper=r["pub_hi"]))

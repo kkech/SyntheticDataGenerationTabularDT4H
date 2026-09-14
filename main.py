@@ -274,7 +274,10 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
 
                 import pandas as pd
 
-                from pipeline.steps.generate.synthesizers.smartnoise_models import compute_domain_report
+                from pipeline.steps.generate.synthesizers.smartnoise_models import (
+                    coarse_observed_span,
+                    compute_domain_report,
+                )
                 from pipeline.steps.preprocess.transforms import NUMERIC_ENCODING_FILENAME
 
                 train_df = pd.read_parquet(config.train_output_path)
@@ -295,7 +298,8 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
                     for c, r in sorted(violating.items(), key=lambda kv: -(kv[1]["n_below"] + kv[1]["n_above"])):
                         n = r["n_below"] + r["n_above"]
                         print(f"      {c}: {n}/{r['n_total']} datapoint(s) outside "
-                              f"[{r['lower']:g}, {r['pub_hi']:g}] (observed [{r['col_min']:g}, {r['col_max']:g}])")
+                              f"[{r['lower']:g}, {r['pub_hi']:g}] "
+                              f"(observed {coarse_observed_span(r)}, coarsened)")
                 else:
                     print("  ✅ every continuous column's training values fall within its declared public domain")
             except Exception as e:
