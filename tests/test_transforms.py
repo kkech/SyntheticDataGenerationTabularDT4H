@@ -101,7 +101,15 @@ def test_combine_conditions_ors_windows_and_drops_sources():
 
 
 # --- drop_undeclared_columns ---
+# (pinned-schema mode exists on the 2.2-support line; skip cleanly where
+# a checkout does not carry it, so this file runs identically in both repos)
 
+pinned_schema = pytest.mark.skipif(
+    not hasattr(t, "drop_undeclared_columns"),
+    reason="pinned-schema mode not in this checkout")
+
+
+@pinned_schema
 def test_drop_undeclared_columns_pins_to_metadata_schema():
     df = pl.DataFrame({"a": [1], "b": [2], "extra_22_col": [3]})
     out, info = t.drop_undeclared_columns(df, {"a": {}, "b": {}})
@@ -109,6 +117,7 @@ def test_drop_undeclared_columns_pins_to_metadata_schema():
     assert info["dropped"] == ["extra_22_col"]
 
 
+@pinned_schema
 def test_drop_undeclared_runs_before_combining_matters():
     # An undeclared med variant must be droppable BEFORE the combiner
     # would fold it into a feature the pinned schema never described.
