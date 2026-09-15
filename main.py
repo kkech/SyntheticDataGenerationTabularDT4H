@@ -127,10 +127,20 @@ def run_pipeline(
         state.mark_pending(step.name)
 
     for step in to_run:
-        # A rerun replaces the step's outputs wholesale: delete the old
-        # ones first so nothing stale can survive next to fresh files.
+        should_force = force or step.name in force_steps
         step_out = config.step_dir(step.name)
-        if os.path.isdir(step_out):
+        # A rerun replaces the step's outputs wholesale: delete the old
+        # ones first so nothing stale can survive next to fresh files --
+        # UNLESS the step opted into resuming (GenerateStep) and this is
+        # not an explicit --force/--force-step: it was merely never
+        # marked completed (interrupted, crashed, rebooted mid-run), and
+        # the step's own run() reconciles with what's already there
+        # instead of redoing a multi-hour campaign from scratch.
+        if step.resumable and not should_force:
+            if os.path.isdir(step_out):
+                print(f"↩️  '{step.name}' was not marked completed (interrupted?) -- "
+                      f"resuming: {step_out} is kept, not wiped.")
+        elif os.path.isdir(step_out):
             if step.name == "load_data" and not os.path.isdir(config.transfer_folder):
                 raise FileNotFoundError(
                     f"Refusing to delete {step_out} before rerunning load_data: the transfer "

@@ -21,6 +21,7 @@ requirements beyond "produce some rows":
 import contextlib
 import json
 import os
+import shutil
 import signal
 import time
 import traceback
@@ -36,6 +37,9 @@ from pipeline.steps.generate.synthesizers import build_synthesizer
 
 class GenerateStep(PipelineStep):
     name = "generate"
+    #: A multi-hour run plan should not be redone from scratch after a
+    #: crash/reboot -- see PipelineStep.resumable and _reconcile_with_previous_attempt.
+    resumable = True
 
     def run(self, config: PipelineConfig) -> None:
         if not os.path.exists(config.train_output_path):
@@ -98,6 +102,14 @@ class GenerateStep(PipelineStep):
             print(f"  Domain coverage: all {len(continuous)} continuous training "
                   f"column(s) have a declared range.")
 
+        domains_sha = sha if dp_runs else None
+        reused, to_execute = self._reconcile_with_previous_attempt(
+            out_dir, plan, prov, domains_sha, config)
+        if reused:
+            print(f"\n↩️  Resuming: {len(reused)}/{len(plan)} run(s) already completed in "
+                  f"a previous attempt at this exact training data are reused as-is; "
+                  f"{len(to_execute)} run(s) remain.")
+
         # Width-limited runs: "top" = the standard AIM subset
         # (config.aim_max_columns); an integer k = the top-k subset by the
         # same auditable selection. Selections are computed once per
@@ -120,11 +132,11 @@ class GenerateStep(PipelineStep):
             "categorical_columns": len(categorical),
             "run_plan_size": len(plan),
             "top_columns_for_width_limited_runs": top_columns,
-            "runs": [],
+            "runs": list(reused.values()),
         }
 
-        for i, spec in enumerate(plan, 1):
-            print(f"\n[run {i}/{len(plan)}]", end="")
+        for i, spec in enumerate(to_execute, 1):
+            print(f"\n[run {i}/{len(to_execute)}]", end="")
             summary["runs"].append(
                 self._run_one(spec, train, real, constants, config, out_dir, n_rows,
                               column_subsets)
@@ -152,6 +164,84 @@ class GenerateStep(PipelineStep):
             )
 
     # --- helpers ---
+
+    def _reconcile_with_previous_attempt(self, out_dir, plan, prov, domains_sha,
+                                         config) -> tuple[dict, list]:
+        """Which run_ids from `plan` can reuse a prior attempt's result
+        instead of re-executing, and which specs still need to run.
+
+        Reads any DT4H_Generation_Summary.json already sitting in
+        out_dir -- left behind by an interrupted previous attempt at
+        THIS SAME generate() call (crash, OOM-kill, reboot, Ctrl-C;
+        run_pipeline() no longer wipes out_dir before calling run() for
+        a resumable step it merely never saw complete). A run_id's old
+        record is reused only if every input that could have changed
+        its outcome still matches:
+
+          * the exact training file, by sha256 (not just path) --
+            otherwise this is a DIFFERENT training split (preprocess
+            reran) and NOTHING here is safe to reuse, which is the same
+            "mixed generations" mistake run_pipeline()'s STALE-MIX GUARD
+            exists to prevent, one level down;
+          * the recorded seed/epsilon still match the spec's;
+          * for DP runs, the exact public_domains.json revision (sha256)
+            that bounded the old fit -- a domain file edit since then
+            means the old epsilon claim no longer describes what a
+            fresh fit would produce;
+          * the synthetic output file the old record points to still
+            exists on disk (a record claiming "ok" with its file gone
+            is not trustworthy -- redo it).
+
+        A sha256 mismatch on the training file is different from all
+        the other checks: it means out_dir holds output from an
+        entirely different, incompatible campaign, not just some
+        reusable and some not -- so this wipes out_dir itself (the
+        same cleanup run_pipeline() would have done for a non-resumable
+        step) and runs the WHOLE plan fresh, rather than leaving stale
+        per-run files that no longer correspond to anything the current
+        plan would produce sitting next to the new ones.
+        """
+        summary_path = os.path.join(out_dir, "DT4H_Generation_Summary.json")
+        if not os.path.exists(summary_path):
+            return {}, list(plan)
+        try:
+            with open(summary_path) as f:
+                old = json.load(f)
+        except Exception as e:
+            print(f"  ⚠️  Could not read a previous {summary_path} ({type(e).__name__}: {e}) "
+                  f"-- treating this as a fresh run.")
+            return {}, list(plan)
+
+        old_sha = old.get("provenance", {}).get("training_data", {}).get("sha256")
+        cur_sha = prov["training_data"]["sha256"]
+        if not old_sha or old_sha != cur_sha:
+            print(f"  A previous {summary_path} exists but is for a DIFFERENT training file "
+                  f"(sha256 {str(old_sha)[:12]}... vs the current {cur_sha[:12]}...) -- "
+                  f"discarding it and {out_dir} entirely; nothing from it is safe to reuse.")
+            shutil.rmtree(out_dir)
+            os.makedirs(out_dir, exist_ok=True)
+            return {}, list(plan)
+
+        by_id = {spec["run_id"]: spec for spec in plan}
+        reused = {}
+        for r in old.get("runs", []):
+            run_id = r.get("run_id")
+            spec = by_id.get(run_id)
+            if spec is None or r.get("status") != "ok":
+                continue
+            if r.get("seed") != spec.get("seed", config.seed):
+                continue
+            if r.get("epsilon") != spec.get("epsilon"):
+                continue
+            old_domains_sha = r.get("public_domains_sha256")
+            if old_domains_sha is not None and old_domains_sha != domains_sha:
+                continue
+            output_path = r.get("output_path")
+            if not output_path or not os.path.exists(output_path):
+                continue
+            reused[run_id] = r
+        to_execute = [spec for spec in plan if spec["run_id"] not in reused]
+        return reused, to_execute
 
     @staticmethod
     def _is_dp(synthesizer_name: str) -> bool:
