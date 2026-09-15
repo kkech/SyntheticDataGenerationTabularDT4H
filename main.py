@@ -73,10 +73,20 @@ def run_pipeline(
     force_steps: list[str] | None = None,
     only: list[str] | None = None,
     no_cascade: bool = False,
+    retry_failed_steps: list[str] | None = None,
 ) -> None:
     config = config or PipelineConfig()
     state = PipelineState(config.status_path)
     force_steps = set(force_steps or [])
+    # Distinct from force_steps: queues an already-completed step to run
+    # again WITHOUT wiping its output directory first, for a resumable
+    # step (GenerateStep) whose own reconciliation only re-executes the
+    # runs that did NOT succeed last time (a bad public domain entry
+    # aside, a per-run failure is usually transient -- CUDA OOM under too
+    # much --parallel contention, a flaky node) rather than the whole
+    # multi-hour plan. --force-step generate would also rerun it, but
+    # wipes everything first and redoes every run, successes included.
+    retry_failed_steps = set(retry_failed_steps or [])
 
     steps = [s for s in STEPS if only is None or s.name in only]
     if not steps:
@@ -93,8 +103,12 @@ def run_pipeline(
     # pipeline order than the earliest step queued to run is invalidated
     # (marked pending) up front. Steps in the current selection then rerun
     # now; steps outside it (e.g. under --only) rerun on the next full run.
+    # A retry-failed-steps rerun belongs in this too: it can add newly-
+    # successful runs to generate's output, which analysis steps after it
+    # have not seen yet.
     queued = {s.name for s in steps
-              if force or s.name in force_steps or not state.is_completed(s.name)}
+              if force or s.name in force_steps or s.name in retry_failed_steps
+              or not state.is_completed(s.name)}
     step_names = [s.name for s in STEPS]
     stale = plan_cascade_invalidations(step_names, queued, state.is_completed)
     if stale and not no_cascade:
@@ -114,7 +128,7 @@ def run_pipeline(
     to_run = []
     for step in steps:
         should_force = force or step.name in force_steps
-        if state.is_completed(step.name) and not should_force:
+        if state.is_completed(step.name) and not should_force and step.name not in retry_failed_steps:
             print(f"⏭️  Skipping '{step.name}' (already completed). "
                   f"Use --force or --force-step {step.name} to rerun.")
             continue
@@ -137,7 +151,10 @@ def run_pipeline(
         # the step's own run() reconciles with what's already there
         # instead of redoing a multi-hour campaign from scratch.
         if step.resumable and not should_force:
-            if os.path.isdir(step_out):
+            if os.path.isdir(step_out) and step.name in retry_failed_steps:
+                print(f"↩️  Retrying only the failed run(s) in '{step.name}' -- "
+                      f"{step_out} is kept, not wiped; already-successful runs are reused.")
+            elif os.path.isdir(step_out):
                 print(f"↩️  '{step.name}' was not marked completed (interrupted?) -- "
                       f"resuming: {step_out} is kept, not wiped.")
         elif os.path.isdir(step_out):
@@ -390,6 +407,17 @@ def main() -> None:
     parser.add_argument("--force", action="store_true", help="Rerun every step, even if already completed.")
     parser.add_argument("--force-step", action="append", default=[],
                          help="Rerun this step even if already completed (repeatable).")
+    parser.add_argument("--retry-failed-step", action="append", default=[],
+                         help="Rerun this ALREADY-COMPLETED step, but (for a resumable step -- "
+                              "currently just 'generate') WITHOUT wiping its output directory "
+                              "first: already-successful runs are reused as-is and only the "
+                              "runs that failed last time are re-executed. For a batch where "
+                              "some runs failed for a transient reason (CUDA OOM under too much "
+                              "--parallel contention, a flaky node) rather than every run being "
+                              "wrong. --force-step generate also reruns it, but wipes everything "
+                              "and redoes every run, successes included -- use that instead when "
+                              "you actually want a clean restart. Repeatable, though only "
+                              "'generate' does anything special with it today.")
     parser.add_argument("--only", action="append", default=None,
                          help="Run only these step(s) (repeatable).")
     parser.add_argument("--no-cascade", action="store_true",
@@ -520,7 +548,8 @@ def main() -> None:
     handle = start_logging(args.log) if args.log else None
     try:
         run_pipeline(config=cfg, force=args.force, force_steps=args.force_step,
-                     only=args.only, no_cascade=args.no_cascade)
+                     only=args.only, no_cascade=args.no_cascade,
+                     retry_failed_steps=args.retry_failed_step)
     finally:
         if handle:
             stop_logging(handle)
