@@ -173,6 +173,13 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
         print(f"  {mark} {name}" + (f" -- {detail}" if detail else ""))
         ok = ok and passed
 
+    # Computed early so the mbi check below (and every check further down
+    # that already relies on it) can ask "does the run actually need this"
+    # rather than checking every dependency unconditionally -- a machine
+    # excluding aim/mst entirely (main.py --synthesizers/--dp-only) should
+    # not fail preflight over a backend it will never touch.
+    plan = config.resolved_run_plan()
+
     print("Preflight checks:")
     for mod in ("polars", "pandas", "numpy", "scipy", "sdv", "snsynth", "torch",
                 "cloudpickle", "sklearn"):
@@ -186,13 +193,20 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
     # anonymeter's install can silently downgrade numpy to 1.26 and this
     # is the check that catches it BEFORE a multi-day campaign rather
     # than 10 hours in (see requirements.txt, numpy note).
-    try:
-        importlib.import_module("mbi")
-        check("import mbi (MST/AIM backend)", True)
-    except Exception as e:
-        check("import mbi (MST/AIM backend)", False,
-              f"{type(e).__name__}: {e} -- every MST/AIM run would fail; "
-              f"fix: `pip install numpy==2.2.6` (see requirements.txt)")
+    needs_mbi = any(s["synthesizer"] in ("aim", "mst") for s in plan)
+    if needs_mbi:
+        try:
+            importlib.import_module("mbi")
+            check("import mbi (MST/AIM backend)", True)
+        except Exception as e:
+            check("import mbi (MST/AIM backend)", False,
+                  f"{type(e).__name__}: {e} -- every MST/AIM run would fail; if this is "
+                  f"a numpy<2 downgrade (e.g. from installing anonymeter), fix: "
+                  f"`pip install numpy==2.2.6` (see requirements.txt) -- otherwise this "
+                  f"is unrelated to numpy (read the exception above).")
+    else:
+        print("  ⏭️  import mbi (MST/AIM backend) -- skipped, no aim/mst run in the "
+              "resolved plan (--synthesizers/--dp-only excluded them)")
 
     try:
         import torch
@@ -245,7 +259,6 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
 
     from pipeline.steps.generate.synthesizers import REGISTRY
 
-    plan = config.resolved_run_plan()
     unknown = sorted({s["synthesizer"] for s in plan} - set(REGISTRY))
     check("synthesizers registered", not unknown,
           ", ".join(sorted({s["synthesizer"] for s in plan})))
@@ -393,6 +406,23 @@ def main() -> None:
                          help="Explicit path to the feature-set metadata JSON, for when "
                               "it does not live inside --data-dir. Copied to "
                               "output/profile_data/metadata.json for the downstream steps.")
+    synth_filter = parser.add_mutually_exclusive_group()
+    synth_filter.add_argument("--synthesizers", metavar="NAME[,NAME...]",
+                         help="Restrict the generate step's run plan to only these synthesizer "
+                              "families (comma-separated, e.g. 'dpctgan,ctgan,tvae,gaussian_copula') "
+                              "-- the SAME plan resolved_run_plan() would build (respects "
+                              "--extended), just filtered down to the names given. Useful for "
+                              "excluding a backend this machine can't run (e.g. aim/mst when "
+                              "mbi/jax won't import) or testing one model family in isolation. "
+                              "NOTE: --force-step generate (or --force) still deletes ALL of "
+                              "output/generate/ first -- this only controls what gets "
+                              "regenerated afterward, not what survives from a prior run. "
+                              "Mutually exclusive with --dp-only.")
+    synth_filter.add_argument("--dp-only", action="store_true",
+                         help="Shortcut for --synthesizers <every DP-registered family present "
+                              "in the resolved plan> -- derived from each synthesizer's is_dp "
+                              "flag in the registry (pipeline/steps/generate/synthesizers), not "
+                              "a hardcoded list. Mutually exclusive with --synthesizers.")
     parser.add_argument("--status", action="store_true", help="Print step-completion status and exit.")
     parser.add_argument("--min-free-gb", type=float, default=None,
                          help="Override the preflight free-disk requirement (GB). The v3 "
@@ -433,6 +463,26 @@ def main() -> None:
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
+
+    if args.synthesizers or args.dp_only:
+        cfg = cfg or PipelineConfig()
+        plan = cfg.resolved_run_plan()
+        if args.dp_only:
+            from pipeline.steps.generate.step import GenerateStep
+
+            wanted = {name for name in {s["synthesizer"] for s in plan} if GenerateStep._is_dp(name)}
+        else:
+            wanted = {n.strip() for n in args.synthesizers.split(",") if n.strip()}
+        filtered = [s for s in plan if s["synthesizer"] in wanted]
+        if not filtered:
+            parser.error(
+                f"--synthesizers/--dp-only matched no run in the resolved plan "
+                f"(wanted: {sorted(wanted)}). Available synthesizer families: "
+                f"{sorted({s['synthesizer'] for s in plan})}"
+            )
+        cfg.run_plan = filtered
+        print(f"Filtered run plan to {len(filtered)}/{len(plan)} run(s) "
+              f"(synthesizers: {sorted(wanted)}): " + ", ".join(s["run_id"] for s in filtered))
 
     # Analysis-only runs write reports and figures (tens of MB), not
     # models and datasets -- a full campaign's 5 GB headroom would block
