@@ -402,6 +402,16 @@ class SurvivalStep(PipelineStep):
     def _effect_replication(self, train, holdout, synthetic_files, config):
         import pandas as pd
 
+        # Same guard as the endpoint loop: a site whose extract lacks the
+        # all-cause mortality column (e.g. a different feature-set
+        # schema) has no 1-year mortality outcome to replicate. Skip with
+        # a recorded note instead of crashing the whole step on a KeyError.
+        col = ENDPOINTS["all_cause_death"]
+        if col not in train.columns:
+            print(f"  ⚠️  Endpoint column {col} absent; effect replication skipped.")
+            return {"note": f"skipped: endpoint column {col} absent from the "
+                            "preprocessed data"}
+
         scaler = self._train_scaler(train)
         real_fit = self._fit_effects(train, scaler)
         if real_fit is None:
