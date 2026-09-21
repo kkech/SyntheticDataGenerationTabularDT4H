@@ -1,0 +1,163 @@
+[15:42:05] ======================================================================
+[15:42:05] Run started: 2026-09-14T13:42:05.456756+00:00
+[15:42:05] Command: main.py --force --extended --data-dir /mnt/d02/fhir_data/feast-output-data/myFhirServer/dataset/study1-fs/b72349eb-6667-4e6a-8337-5157ebc49a3d/
+[15:42:05] ======================================================================
+
+[15:42:05] ======================================================================
+[15:42:05] ▶️  RUNNING 'load_data' (started 15:42:05)
+[15:42:05] ======================================================================
+[15:42:05] Found 3 part file(s):
+[15:42:05]   part-00000-d0cfccef-9474-4b65-9b60-d7aaa1e6164f-c000.snappy.parquet: 750 rows x 540 cols
+[15:42:05]   part-00001-e6943b92-b494-4d80-8663-30ea4084ba07-c000.snappy.parquet: 750 rows x 540 cols
+[15:42:05]   part-00002-c12f4985-5c33-4cc4-9224-3737fb71c4b0-c000.snappy.parquet: 565 rows x 540 cols
+[15:42:05] Concatenated: 2065 rows x 540 cols
+[15:42:05] Saved full dataset (local only, not for git) -> /home/translated/kon/output/load_data/UC1_Resolved_Full.parquet
+[15:42:05] ✅ 'load_data' completed in 0s.
+
+[15:42:05] ======================================================================
+[15:42:05] ▶️  RUNNING 'profile_data' (started 15:42:05)
+[15:42:05] ======================================================================
+[15:42:05] Copied metadata file -> /home/translated/kon/output/profile_data/metadata.json
+[15:42:05] Profiling 2065 rows x 540 columns...
+[15:42:06] Saved column analysis (JSON) -> /home/translated/kon/output/profile_data/DT4H_Column_Analysis.json
+[15:42:06] Saved column analysis (Markdown) -> /home/translated/kon/output/profile_data/DT4H_Column_Analysis.md
+[15:42:06] Saved random sample of 20 row(s) (seed=0) -> /home/translated/kon/output/profile_data/DT4H_Sample20.parquet
+[15:42:06] ✅ 'profile_data' completed in 1s.
+
+[15:42:06] ======================================================================
+[15:42:06] ▶️  RUNNING 'preprocess' (started 15:42:06)
+[15:42:06] ======================================================================
+[15:42:06] Loaded 2065 rows x 540 columns.
+[15:42:06] Unique patients (pid): 2065
+[15:42:06] Validating against metadata...
+[15:42:06]   540 declared in metadata.json, 540 present in data, 540 match.
+[15:42:06] Checking expected non-null pairs...
+[15:42:06]   ⚠️ lab_results_hdl_value_first: 938 non-null vs lab_results_ldl_value_first: 16 non-null (expected similar (ordered together))
+[15:42:06]   lab_results_potassium_value_first: 2004 non-null vs lab_results_sodium_value_first: 2004 non-null (expected similar (ordered together))
+[15:42:06]   ⚠️ lab_results_albuminBS_value_first: 722 non-null vs lab_results_ntProBnp_value_first: 1237 non-null (expected similar)
+[15:42:06]   ⚠️ lab_results_albuminBS_value_first: 722 non-null vs lab_results_crpNonHs_value_first: 2006 non-null (expected similar)
+[15:42:06]   lab_results_albuminBS_value_first: 722 non-null vs lab_results_hba1c_value_first: 534 non-null (expected similar)
+[15:42:06]   ⚠️ vital_signs_heartRate_value_first: 864 non-null vs vital_signs_oxygenSaturation_value_first: 30 non-null (expected similar, oxygen sat maybe slightly lower)
+[15:42:06] Flattening ARRAY[NOMINAL] columns...
+[15:42:06]   Flattening 2 ARRAY[NOMINAL] column(s) to scalar: ['electrocardiographs_ecg_type_of_rhythms_pET_first', 'electrocardiographs_ecg_type_of_rhythms_pET_last']
+[15:42:06] Normalizing numeric dtypes...
+[15:42:06]   Casting 183 Decimal column(s) to Float64: 183 column(s)
+[15:42:06] Invalidating out-of-domain values (declared public ranges)...
+[15:42:06]   vital_signs_height_value_p1a_avg: 3 value(s) outside the declared public domain [90, 250] -> null (invalid measurement)
+[15:42:06]   vital_signs_height_value_last: 3 value(s) outside the declared public domain [90, 250] -> null (invalid measurement)
+[15:42:06]   vital_signs_diastolicBp_value_first: 1 value(s) outside the declared public domain [0, 250] -> null (invalid measurement)
+[15:42:06]   vital_signs_diastolicBp_value_last: 1 value(s) outside the declared public domain [0, 250] -> null (invalid measurement)
+[15:42:06]   lab_results_cholTot_value_last: 1 value(s) outside the declared public domain [0.5, 15] -> null (invalid measurement)
+[15:42:06]   lab_results_potassium_value_last: 15 value(s) outside the declared public domain [1, 10] -> null (invalid measurement)
+[15:42:06]   lab_results_potassium_value_first: 14 value(s) outside the declared public domain [1, 10] -> null (invalid measurement)
+[15:42:06]   lab_results_sodium_value_last: 4 value(s) outside the declared public domain [90, 200] -> null (invalid measurement)
+[15:42:06]   lab_results_sodium_value_first: 1 value(s) outside the declared public domain [90, 200] -> null (invalid measurement)
+[15:42:06]   echocardiographs_lvef: 1 value(s) outside the declared public domain [-200, 100] -> null (invalid measurement)
+[15:42:06]   vital_signs_bmi_value_pET: 5 value(s) outside the declared public domain [10, 100] -> null (invalid measurement)
+[15:42:06]   encounter_primary_reason_number_of_HF_rehospitalizations_5a_f5a_count: 1 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:06]   encounter_primary_reason_number_of_CV_rehospitalizations_5a_f5a_count: 13 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:06]   encounter_primary_reason_number_of_non_CV_rehospitalizations_5a_f5a_count: 32 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:06]   Invalidated 95 out-of-domain cell(s) across 14 column(s); they are 'not measured' from here on.
+[15:42:06] Checking symptom columns...
+[15:42:06]   30 symptom_* column(s) present, 10 currently constant (NLP module not yet integrated) -- kept in the data, not dropped.
+[15:42:06] Combining medication columns...
+[15:42:06]   Combined medication columns into 58 feature(s) (30 current + 28 history).
+[15:42:06] Combining condition columns...
+[15:42:06]   Combined condition columns into 31 feature(s).
+[15:42:06] Encoding NYHA...
+[15:42:06]   Encoding nyha_nyha_pET via metadata valueSet: {'LA28404-4': 1, 'LA28405-1': 2, 'LA28406-9': 3, 'LA28407-7': 4}
+[15:42:06]   Encoding nyha_nyha via metadata valueSet: {'LA28404-4': 1, 'LA28405-1': 2, 'LA28406-9': 3, 'LA28407-7': 4}
+[15:42:06] Preferring _first/_last numeric variants...
+[15:42:06]   Dropping 140 numeric aggregate column(s) (bare/_min/_max/_avg/_stddev) in favor of _first/_last.
+[15:42:06] Dropping identifier/datetime columns...
+[15:42:06]   Dropping 7 IDENTIFIER/DATETIME column(s): ['pid', 'encounterId', 'eventTime', 'exitTime', 'referenceTimePoint', 'encounters_admissionDate', 'encounters_dischargeDate']
+[15:42:06] Dropping near-unique identifier-like columns (safety net)...
+[15:42:06]   Dropping 1 near-unique identifier-like column(s) not caught by declared type: ['patient_demographics_sourceIdentifier']
+[15:42:06] Final null cleanup...
+[15:42:06]   Sentinel-encoded 54 numeric column(s) (3 time-to-event 'no event', 51 'not measured'); dropped 33 column(s) with fewer than 103 observed values (5% of 2065 rows).
+[15:42:06]     dropped vital_signs_oxygenSaturation_value_first (only 30 observed)
+[15:42:06]     dropped vital_signs_oxygenSaturation_value_last (only 30 observed)
+[15:42:06]     dropped lab_results_ferritin_value_first (only 86 observed)
+[15:42:06]     dropped lab_results_ferritin_value_last (only 86 observed)
+[15:42:06]     dropped lab_results_tfs_value_first (only 86 observed)
+[15:42:06]     dropped lab_results_tfs_value_last (only 86 observed)
+[15:42:06]     dropped lab_results_bnp_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_bnp_value_last (only 0 observed)
+[15:42:06]     dropped lab_results_crpHs_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_crpHs_value_last (only 0 observed)
+[15:42:06]     dropped lab_results_tropIHs_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_tropIHs_value_last (only 0 observed)
+[15:42:06]     dropped lab_results_tropInHs_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_tropInHs_value_last (only 0 observed)
+[15:42:06]     dropped lab_results_tropTnHs_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_tropTnHs_value_last (only 0 observed)
+[15:42:06]     dropped lab_results_creatUS_value_first (only 31 observed)
+[15:42:06]     dropped lab_results_creatUS_value_last (only 31 observed)
+[15:42:06]     dropped lab_results_albuminUS_value_first (only 26 observed)
+[15:42:06]     dropped lab_results_albuminUS_value_last (only 26 observed)
+[15:42:06]     dropped lab_results_bun_value_first (only 1 observed)
+[15:42:06]     dropped lab_results_bun_value_last (only 1 observed)
+[15:42:06]     dropped lab_results_acr_value_first (only 26 observed)
+[15:42:06]     dropped lab_results_acr_value_last (only 26 observed)
+[15:42:06]     dropped lab_results_ldl_value_first (only 16 observed)
+[15:42:06]     dropped lab_results_ldl_value_last (only 16 observed)
+[15:42:06]     dropped lab_results_hba1c%_value_first (only 0 observed)
+[15:42:06]     dropped lab_results_hba1c%_value_last (only 0 observed)
+[15:42:06]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_heart_failure_f5a_first (only 47 observed)
+[15:42:06]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_renal_complications_f5a_first (only 2 observed)
+[15:42:06]     dropped cause_of_death_number_of_days_to_death_for_CV_f5a_first (only 0 observed)
+[15:42:06]     dropped cause_of_death_number_of_days_to_death_for_renal_f5a_first (only 0 observed)
+[15:42:06]     dropped cause_of_death_number_of_days_to_death_for_non_renal_and_non_CV_f5a_first (only 0 observed)
+[15:42:06]   Encoding map (for decoding synthetic output back to null) -> /home/translated/kon/output/preprocess/DT4H_Numeric_Missing_Encoding.json
+[15:42:06]   Normalized 190 boolean/categorical column(s) to String; 63 of them had nulls filled with an explicit 'Missing' category.
+[15:42:06] Remaining missing cells after all imputation: 0 null, 0 NaN
+[15:42:06] Saved 2065 rows x 256 columns -> /home/translated/kon/output/preprocess/UC1_Preprocessed.parquet
+[15:42:06] Holdout split (seed 0): 1549 train rows -> /home/translated/kon/output/preprocess/UC1_Train.parquet, 516 holdout rows -> /home/translated/kon/output/preprocess/UC1_Holdout.parquet
+[15:42:06] Saved holdout split manifest -> /home/translated/kon/output/preprocess/DT4H_Holdout_Split.json
+[15:42:06] Saved preprocessing summary (JSON) -> /home/translated/kon/output/preprocess/DT4H_Preprocessing_Summary.json
+[15:42:06] Saved preprocessing summary (Markdown) -> /home/translated/kon/output/preprocess/DT4H_Preprocessing_Summary.md
+[15:42:06] ✅ 'preprocess' completed in 1s.
+
+[15:42:06] ======================================================================
+[15:42:06] ▶️  RUNNING 'profile_preprocessed_data' (started 15:42:06)
+[15:42:06] ======================================================================
+[15:42:06] Copied metadata file -> /home/translated/kon/output/profile_preprocessed_data/metadata.json
+[15:42:06] Profiling 2065 rows x 256 columns (preprocessed)...
+[15:42:07] Saved preprocessed column analysis (JSON) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.json
+[15:42:07] Saved preprocessed column analysis (Markdown) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.md
+[15:42:07] Saved random sample of 20 row(s) (seed=0) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Sample20.parquet
+[15:42:07] ✅ 'profile_preprocessed_data' completed in 0s.
+
+[15:42:07] ======================================================================
+[15:42:07] ▶️  RUNNING 'generate' (started 15:42:07)
+[15:42:07] ======================================================================
+[15:42:07] Loaded TRAINING split: 1549 rows x 256 columns (the 25% holdout is never shown to any generator)
+[15:42:09] Seed: 0 | python 3.10.12
+[15:42:09] GPU: NVIDIA A30 -- 25.09 GB free of 25.34 GB (CUDA 12.1)
+[15:42:09] ⚠️  Working tree has uncommitted changes -- this run is not reproducible from the recorded git commit alone.
+[15:42:09] Holding out 22 constant column(s) from training (re-attached verbatim after sampling).
+[15:42:09] Training columns: 66 continuous, 168 categorical
+
+[15:42:09] Run plan: 52 run(s) -- gaussian_copula_seed0, gaussian_copula_seed1, gaussian_copula_seed2, tvae_seed0, tvae_seed1, tvae_seed2, ctgan_seed0, ctgan_seed1, ctgan_seed2, dpctgan_eps1_seed0, dpctgan_eps5_seed0, dpctgan_eps8_seed0, dpctgan_eps10_seed0, dpctgan_eps15_seed0, dpctgan_eps20_seed0, dpctgan_eps15_seed1, dpctgan_eps15_seed2, aim50_eps1_seed0, aim50_eps5_seed0, aim50_eps8_seed0, aim50_eps10_seed0, aim50_eps15_seed0, aim50_eps20_seed0, mst_eps1_seed0, mst_eps5_seed0, mst_eps8_seed0, mst_eps10_seed0, mst_eps15_seed0, mst_eps20_seed0, mst_eps15_seed1, mst_eps15_seed2, tvae_qt_seed0, tvae_qt_seed1, tvae_qt_seed2, tvae_cap256_seed0, tvae_ep1000_seed0, tvae_ind_seed0, ctgan_qt_seed0, aim40_eps1_seed0, aim40_eps5_seed0, aim40_eps8_seed0, aim40_eps10_seed0, aim40_eps15_seed0, aim40_eps20_seed0, ddpm_seed0, ddpm_seed1, ddpm_seed2, ddpm_g_seed0, patectgan_eps1_seed0, patectgan_eps5_seed0, patectgan_eps15_seed0, mst_eps0p5_seed0
+[15:42:09] Public numeric domains: 101 reviewed column range(s) from /home/translated/kon/public_domains.json (sha256 7b486344dcd7...) -- these bound all 32 DP run(s); no bound is derived from the training data.
+[15:42:09]   Domain coverage: all 66 continuous training column(s) have a declared range.
+
+[15:42:09] Selecting top 40 outcome-relevant columns for width-limited runs (6 force-included: 3 TSTR targets + demographics/NYHA)...
+[15:42:11]   Selected 40 columns (top ranked: ['med_rasi', 'encounters_admissionYear', 'med_bb', 'ckd_severity_categorizedValue', 'lab_results_crpNonHs_value_last'])
+[15:42:11]   Saved column selection (auditable) -> /home/translated/kon/output/generate/DT4H_Column_Selection_top40.json
+
+[15:42:11] Selecting top 50 outcome-relevant columns for width-limited runs (6 force-included: 3 TSTR targets + demographics/NYHA)...
+[15:42:13]   Selected 50 columns (top ranked: ['med_rasi', 'encounters_admissionYear', 'med_bb', 'ckd_severity_categorizedValue', 'lab_results_crpNonHs_value_last'])
+[15:42:13]   Saved column selection (auditable) -> /home/translated/kon/output/generate/DT4H_AIM_Column_Selection.json
+
+[15:42:13] [run 1/52]
+[15:42:13] ======================================================================
+[15:42:13] ▶️  RUN: gaussian_copula_seed0 (model gaussian_copula, seed 0)
+[15:42:13] ======================================================================
+[15:42:13] No formal privacy guarantee (non-DP model).
+[15:42:13] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:13] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:13] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/sdv/single_table/base.py:139: UserWarning: We strongly recommend saving the metadata using 'save_to_json' for replicability in future SDV versions.
+[15:42:21] ❌ Step 'generate' interrupted after 14s: terminated (SIGTERM)
+
+[15:42:21] Run finished: 2026-09-14T13:42:21.287860+00:00

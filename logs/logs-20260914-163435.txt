@@ -1,0 +1,1508 @@
+[15:42:32] ======================================================================
+[15:42:32] Run started: 2026-09-14T13:42:32.526316+00:00
+[15:42:32] Command: main.py --force --extended --data-dir /mnt/d02/fhir_data/feast-output-data/myFhirServer/dataset/study1-fs/b72349eb-6667-4e6a-8337-5157ebc49a3d/ --parallel 20
+[15:42:32] ======================================================================
+[15:42:32] 🧹 Deleted previous outputs of 'load_data' (/home/translated/kon/output/load_data) for a clean rerun.
+
+[15:42:32] ======================================================================
+[15:42:32] ▶️  RUNNING 'load_data' (started 15:42:32)
+[15:42:32] ======================================================================
+[15:42:32] Found 3 part file(s):
+[15:42:32]   part-00000-d0cfccef-9474-4b65-9b60-d7aaa1e6164f-c000.snappy.parquet: 750 rows x 540 cols
+[15:42:32]   part-00001-e6943b92-b494-4d80-8663-30ea4084ba07-c000.snappy.parquet: 750 rows x 540 cols
+[15:42:32]   part-00002-c12f4985-5c33-4cc4-9224-3737fb71c4b0-c000.snappy.parquet: 565 rows x 540 cols
+[15:42:32] Concatenated: 2065 rows x 540 cols
+[15:42:32] Saved full dataset (local only, not for git) -> /home/translated/kon/output/load_data/UC1_Resolved_Full.parquet
+[15:42:32] ✅ 'load_data' completed in 0s.
+[15:42:32] 🧹 Deleted previous outputs of 'profile_data' (/home/translated/kon/output/profile_data) for a clean rerun.
+
+[15:42:32] ======================================================================
+[15:42:32] ▶️  RUNNING 'profile_data' (started 15:42:32)
+[15:42:32] ======================================================================
+[15:42:32] Copied metadata file -> /home/translated/kon/output/profile_data/metadata.json
+[15:42:32] Profiling 2065 rows x 540 columns...
+[15:42:33] Saved column analysis (JSON) -> /home/translated/kon/output/profile_data/DT4H_Column_Analysis.json
+[15:42:33] Saved column analysis (Markdown) -> /home/translated/kon/output/profile_data/DT4H_Column_Analysis.md
+[15:42:33] Saved random sample of 20 row(s) (seed=0) -> /home/translated/kon/output/profile_data/DT4H_Sample20.parquet
+[15:42:33] ✅ 'profile_data' completed in 1s.
+[15:42:33] 🧹 Deleted previous outputs of 'preprocess' (/home/translated/kon/output/preprocess) for a clean rerun.
+
+[15:42:33] ======================================================================
+[15:42:33] ▶️  RUNNING 'preprocess' (started 15:42:33)
+[15:42:33] ======================================================================
+[15:42:33] Loaded 2065 rows x 540 columns.
+[15:42:33] Unique patients (pid): 2065
+[15:42:33] Validating against metadata...
+[15:42:33]   540 declared in metadata.json, 540 present in data, 540 match.
+[15:42:33] Checking expected non-null pairs...
+[15:42:33]   ⚠️ lab_results_hdl_value_first: 938 non-null vs lab_results_ldl_value_first: 16 non-null (expected similar (ordered together))
+[15:42:33]   lab_results_potassium_value_first: 2004 non-null vs lab_results_sodium_value_first: 2004 non-null (expected similar (ordered together))
+[15:42:33]   ⚠️ lab_results_albuminBS_value_first: 722 non-null vs lab_results_ntProBnp_value_first: 1237 non-null (expected similar)
+[15:42:33]   ⚠️ lab_results_albuminBS_value_first: 722 non-null vs lab_results_crpNonHs_value_first: 2006 non-null (expected similar)
+[15:42:33]   lab_results_albuminBS_value_first: 722 non-null vs lab_results_hba1c_value_first: 534 non-null (expected similar)
+[15:42:33]   ⚠️ vital_signs_heartRate_value_first: 864 non-null vs vital_signs_oxygenSaturation_value_first: 30 non-null (expected similar, oxygen sat maybe slightly lower)
+[15:42:33] Flattening ARRAY[NOMINAL] columns...
+[15:42:33]   Flattening 2 ARRAY[NOMINAL] column(s) to scalar: ['electrocardiographs_ecg_type_of_rhythms_pET_first', 'electrocardiographs_ecg_type_of_rhythms_pET_last']
+[15:42:33] Normalizing numeric dtypes...
+[15:42:33]   Casting 183 Decimal column(s) to Float64: 183 column(s)
+[15:42:33] Invalidating out-of-domain values (declared public ranges)...
+[15:42:33]   vital_signs_height_value_p1a_avg: 3 value(s) outside the declared public domain [90, 250] -> null (invalid measurement)
+[15:42:33]   vital_signs_height_value_last: 3 value(s) outside the declared public domain [90, 250] -> null (invalid measurement)
+[15:42:33]   vital_signs_diastolicBp_value_first: 1 value(s) outside the declared public domain [0, 250] -> null (invalid measurement)
+[15:42:33]   vital_signs_diastolicBp_value_last: 1 value(s) outside the declared public domain [0, 250] -> null (invalid measurement)
+[15:42:33]   lab_results_cholTot_value_last: 1 value(s) outside the declared public domain [0.5, 15] -> null (invalid measurement)
+[15:42:33]   lab_results_potassium_value_last: 15 value(s) outside the declared public domain [1, 10] -> null (invalid measurement)
+[15:42:33]   lab_results_potassium_value_first: 14 value(s) outside the declared public domain [1, 10] -> null (invalid measurement)
+[15:42:33]   lab_results_sodium_value_last: 4 value(s) outside the declared public domain [90, 200] -> null (invalid measurement)
+[15:42:33]   lab_results_sodium_value_first: 1 value(s) outside the declared public domain [90, 200] -> null (invalid measurement)
+[15:42:33]   echocardiographs_lvef: 1 value(s) outside the declared public domain [-200, 100] -> null (invalid measurement)
+[15:42:33]   vital_signs_bmi_value_pET: 5 value(s) outside the declared public domain [10, 100] -> null (invalid measurement)
+[15:42:33]   encounter_primary_reason_number_of_HF_rehospitalizations_5a_f5a_count: 1 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:33]   encounter_primary_reason_number_of_CV_rehospitalizations_5a_f5a_count: 13 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:33]   encounter_primary_reason_number_of_non_CV_rehospitalizations_5a_f5a_count: 32 value(s) outside the declared public domain [0, 50] -> null (invalid measurement)
+[15:42:33]   Invalidated 95 out-of-domain cell(s) across 14 column(s); they are 'not measured' from here on.
+[15:42:33] Checking symptom columns...
+[15:42:33]   30 symptom_* column(s) present, 10 currently constant (NLP module not yet integrated) -- kept in the data, not dropped.
+[15:42:33] Combining medication columns...
+[15:42:33]   Combined medication columns into 58 feature(s) (30 current + 28 history).
+[15:42:33] Combining condition columns...
+[15:42:33]   Combined condition columns into 31 feature(s).
+[15:42:33] Encoding NYHA...
+[15:42:33]   Encoding nyha_nyha_pET via metadata valueSet: {'LA28404-4': 1, 'LA28405-1': 2, 'LA28406-9': 3, 'LA28407-7': 4}
+[15:42:33]   Encoding nyha_nyha via metadata valueSet: {'LA28404-4': 1, 'LA28405-1': 2, 'LA28406-9': 3, 'LA28407-7': 4}
+[15:42:33] Preferring _first/_last numeric variants...
+[15:42:33]   Dropping 140 numeric aggregate column(s) (bare/_min/_max/_avg/_stddev) in favor of _first/_last.
+[15:42:33] Dropping identifier/datetime columns...
+[15:42:33]   Dropping 7 IDENTIFIER/DATETIME column(s): ['pid', 'encounterId', 'eventTime', 'exitTime', 'referenceTimePoint', 'encounters_admissionDate', 'encounters_dischargeDate']
+[15:42:33] Dropping near-unique identifier-like columns (safety net)...
+[15:42:33]   Dropping 1 near-unique identifier-like column(s) not caught by declared type: ['patient_demographics_sourceIdentifier']
+[15:42:33] Final null cleanup...
+[15:42:33]   Sentinel-encoded 54 numeric column(s) (3 time-to-event 'no event', 51 'not measured'); dropped 33 column(s) with fewer than 103 observed values (5% of 2065 rows).
+[15:42:33]     dropped vital_signs_oxygenSaturation_value_first (only 30 observed)
+[15:42:33]     dropped vital_signs_oxygenSaturation_value_last (only 30 observed)
+[15:42:33]     dropped lab_results_ferritin_value_first (only 86 observed)
+[15:42:33]     dropped lab_results_ferritin_value_last (only 86 observed)
+[15:42:33]     dropped lab_results_tfs_value_first (only 86 observed)
+[15:42:33]     dropped lab_results_tfs_value_last (only 86 observed)
+[15:42:33]     dropped lab_results_bnp_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_bnp_value_last (only 0 observed)
+[15:42:33]     dropped lab_results_crpHs_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_crpHs_value_last (only 0 observed)
+[15:42:33]     dropped lab_results_tropIHs_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_tropIHs_value_last (only 0 observed)
+[15:42:33]     dropped lab_results_tropInHs_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_tropInHs_value_last (only 0 observed)
+[15:42:33]     dropped lab_results_tropTnHs_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_tropTnHs_value_last (only 0 observed)
+[15:42:33]     dropped lab_results_creatUS_value_first (only 31 observed)
+[15:42:33]     dropped lab_results_creatUS_value_last (only 31 observed)
+[15:42:33]     dropped lab_results_albuminUS_value_first (only 26 observed)
+[15:42:33]     dropped lab_results_albuminUS_value_last (only 26 observed)
+[15:42:33]     dropped lab_results_bun_value_first (only 1 observed)
+[15:42:33]     dropped lab_results_bun_value_last (only 1 observed)
+[15:42:33]     dropped lab_results_acr_value_first (only 26 observed)
+[15:42:33]     dropped lab_results_acr_value_last (only 26 observed)
+[15:42:33]     dropped lab_results_ldl_value_first (only 16 observed)
+[15:42:33]     dropped lab_results_ldl_value_last (only 16 observed)
+[15:42:33]     dropped lab_results_hba1c%_value_first (only 0 observed)
+[15:42:33]     dropped lab_results_hba1c%_value_last (only 0 observed)
+[15:42:33]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_heart_failure_f5a_first (only 47 observed)
+[15:42:33]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_renal_complications_f5a_first (only 2 observed)
+[15:42:33]     dropped cause_of_death_number_of_days_to_death_for_CV_f5a_first (only 0 observed)
+[15:42:33]     dropped cause_of_death_number_of_days_to_death_for_renal_f5a_first (only 0 observed)
+[15:42:33]     dropped cause_of_death_number_of_days_to_death_for_non_renal_and_non_CV_f5a_first (only 0 observed)
+[15:42:33]   Encoding map (for decoding synthetic output back to null) -> /home/translated/kon/output/preprocess/DT4H_Numeric_Missing_Encoding.json
+[15:42:33]   Normalized 190 boolean/categorical column(s) to String; 63 of them had nulls filled with an explicit 'Missing' category.
+[15:42:33] Remaining missing cells after all imputation: 0 null, 0 NaN
+[15:42:33] Saved 2065 rows x 256 columns -> /home/translated/kon/output/preprocess/UC1_Preprocessed.parquet
+[15:42:33] Holdout split (seed 0): 1549 train rows -> /home/translated/kon/output/preprocess/UC1_Train.parquet, 516 holdout rows -> /home/translated/kon/output/preprocess/UC1_Holdout.parquet
+[15:42:33] Saved holdout split manifest -> /home/translated/kon/output/preprocess/DT4H_Holdout_Split.json
+[15:42:34] Saved preprocessing summary (JSON) -> /home/translated/kon/output/preprocess/DT4H_Preprocessing_Summary.json
+[15:42:34] Saved preprocessing summary (Markdown) -> /home/translated/kon/output/preprocess/DT4H_Preprocessing_Summary.md
+[15:42:34] ✅ 'preprocess' completed in 1s.
+[15:42:34] 🧹 Deleted previous outputs of 'profile_preprocessed_data' (/home/translated/kon/output/profile_preprocessed_data) for a clean rerun.
+
+[15:42:34] ======================================================================
+[15:42:34] ▶️  RUNNING 'profile_preprocessed_data' (started 15:42:34)
+[15:42:34] ======================================================================
+[15:42:34] Copied metadata file -> /home/translated/kon/output/profile_preprocessed_data/metadata.json
+[15:42:34] Profiling 2065 rows x 256 columns (preprocessed)...
+[15:42:34] Saved preprocessed column analysis (JSON) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.json
+[15:42:34] Saved preprocessed column analysis (Markdown) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.md
+[15:42:34] Saved random sample of 20 row(s) (seed=0) -> /home/translated/kon/output/profile_preprocessed_data/DT4H_Preprocessed_Sample20.parquet
+[15:42:34] ✅ 'profile_preprocessed_data' completed in 0s.
+[15:42:34] 🧹 Deleted previous outputs of 'generate' (/home/translated/kon/output/generate) for a clean rerun.
+
+[15:42:34] ======================================================================
+[15:42:34] ▶️  RUNNING 'generate' (started 15:42:34)
+[15:42:34] ======================================================================
+[15:42:34] Loaded TRAINING split: 1549 rows x 256 columns (the 25% holdout is never shown to any generator)
+[15:42:36] Seed: 0 | python 3.10.12
+[15:42:36] GPU: NVIDIA A30 -- 25.09 GB free of 25.34 GB (CUDA 12.1)
+[15:42:36] ⚠️  Working tree has uncommitted changes -- this run is not reproducible from the recorded git commit alone.
+[15:42:36] Holding out 22 constant column(s) from training (re-attached verbatim after sampling).
+[15:42:36] Training columns: 66 continuous, 168 categorical
+
+[15:42:36] Run plan: 52 run(s) -- gaussian_copula_seed0, gaussian_copula_seed1, gaussian_copula_seed2, tvae_seed0, tvae_seed1, tvae_seed2, ctgan_seed0, ctgan_seed1, ctgan_seed2, dpctgan_eps1_seed0, dpctgan_eps5_seed0, dpctgan_eps8_seed0, dpctgan_eps10_seed0, dpctgan_eps15_seed0, dpctgan_eps20_seed0, dpctgan_eps15_seed1, dpctgan_eps15_seed2, aim50_eps1_seed0, aim50_eps5_seed0, aim50_eps8_seed0, aim50_eps10_seed0, aim50_eps15_seed0, aim50_eps20_seed0, mst_eps1_seed0, mst_eps5_seed0, mst_eps8_seed0, mst_eps10_seed0, mst_eps15_seed0, mst_eps20_seed0, mst_eps15_seed1, mst_eps15_seed2, tvae_qt_seed0, tvae_qt_seed1, tvae_qt_seed2, tvae_cap256_seed0, tvae_ep1000_seed0, tvae_ind_seed0, ctgan_qt_seed0, aim40_eps1_seed0, aim40_eps5_seed0, aim40_eps8_seed0, aim40_eps10_seed0, aim40_eps15_seed0, aim40_eps20_seed0, ddpm_seed0, ddpm_seed1, ddpm_seed2, ddpm_g_seed0, patectgan_eps1_seed0, patectgan_eps5_seed0, patectgan_eps15_seed0, mst_eps0p5_seed0
+[15:42:36] Public numeric domains: 101 reviewed column range(s) from /home/translated/kon/public_domains.json (sha256 7b486344dcd7...) -- these bound all 32 DP run(s); no bound is derived from the training data.
+[15:42:36]   Domain coverage: all 66 continuous training column(s) have a declared range.
+
+[15:42:36] Selecting top 40 outcome-relevant columns for width-limited runs (6 force-included: 3 TSTR targets + demographics/NYHA)...
+[15:42:38]   Selected 40 columns (top ranked: ['med_rasi', 'encounters_admissionYear', 'med_bb', 'ckd_severity_categorizedValue', 'lab_results_crpNonHs_value_last'])
+[15:42:38]   Saved column selection (auditable) -> /home/translated/kon/output/generate/DT4H_Column_Selection_top40.json
+
+[15:42:38] Selecting top 50 outcome-relevant columns for width-limited runs (6 force-included: 3 TSTR targets + demographics/NYHA)...
+[15:42:39]   Selected 50 columns (top ranked: ['med_rasi', 'encounters_admissionYear', 'med_bb', 'ckd_severity_categorizedValue', 'lab_results_crpNonHs_value_last'])
+[15:42:39]   Saved column selection (auditable) -> /home/translated/kon/output/generate/DT4H_AIM_Column_Selection.json
+
+[15:42:39] Running 52 run(s) with up to 20 concurrent worker process(es) -- each its own CUDA context, sharing this machine's GPU memory. Per-run output is printed as one block when that run finishes, not live.
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps15_seed2 (model dpctgan, seed 2, ε=15.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ dpctgan_eps15_seed2 failed after 7.8s: RuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 357, in train
+[15:42:49]     fake = self._generator(fakez)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+[15:42:49]     return self._call_impl(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+[15:42:49]     return forward_call(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 105, in forward
+[15:42:49]     data = self.seq(input)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+[15:42:49]     return self._call_impl(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+[15:42:49]     return forward_call(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/container.py", line 250, in forward
+[15:42:49]     input = module(input)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+[15:42:49]     return self._call_impl(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+[15:42:49]     return forward_call(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 87, in forward
+[15:42:49]     out = self.fc(input)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+[15:42:49]     return self._call_impl(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+[15:42:49]     return forward_call(*args, **kwargs)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/linear.py", line 125, in forward
+[15:42:49]     return F.linear(input, self.weight, self.bias)
+[15:42:49] RuntimeError: CUDA error: CUBLAS_STATUS_ALLOC_FAILED when calling `cublasCreate(handle)`
+
+[15:42:49] [1/52 done] dpctgan_eps15_seed2: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: aim50_eps8_seed0 (model aim, seed 0, ε=8.0)
+[15:42:49] ======================================================================
+[15:42:49] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:49] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=8, δ=1.64e-05).
+[15:42:49]   AIM rounds capped at 150 (library default would be 800).
+[15:42:49] 50
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ aim50_eps8_seed0 failed after 7.7s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:49] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:49] The above exception was the direct cause of the following exception:
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:49]     self.AIM(data, workload)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:49]     return self.values.flatten() if flatten else self.values
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:49]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:49] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:49] [2/52 done] aim50_eps8_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps15_seed1 (model dpctgan, seed 1, ε=15.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py:1827: FutureWarning: Using a non-full backward hook when the forward contains multiple autograd Nodes is deprecated and will be removed in future versions. This hook will be missing some grad_input. Please use register_full_backward_hook to get the documented behavior.
+[15:42:49]   self._maybe_warn_non_full_backward_hook(args, result, grad_fn)
+[15:42:49] ❌ dpctgan_eps15_seed1 failed after 7.8s: OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 23.60 GiB of which 3.75 MiB is free. Process 2468746 has 224.00 MiB memory in use. Process 2469271 has 394.00 MiB memory in use. Process 2469280 has 368.00 MiB memory in use. Process 2469278 has 394.00 MiB memory in use. Process 2469285 has 248.00 MiB memory in use. Process 2469283 has 248.00 MiB memory in use. Process 2469270 has 248.00 MiB memory in use. Including non-PyTorch memory, this process has 364.00 MiB memory in use. Process 2469282 has 290.00 MiB memory in use. Process 2469284 has 2.62 GiB memory in use. Process 2469276 has 292.00 MiB memory in use. Process 2469277 has 17.92 GiB memory in use. Of the allocated memory 79.63 MiB is allocated by PyTorch, and 2.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 385, in train
+[15:42:49]     error_d_fake.backward()
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/_tensor.py", line 581, in backward
+[15:42:49]     torch.autograd.backward(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/autograd/__init__.py", line 347, in backward
+[15:42:49]     _engine_run_backward(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/autograd/graph.py", line 825, in _engine_run_backward
+[15:42:49]     return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[15:42:49] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 23.60 GiB of which 3.75 MiB is free. Process 2468746 has 224.00 MiB memory in use. Process 2469271 has 394.00 MiB memory in use. Process 2469280 has 368.00 MiB memory in use. Process 2469278 has 394.00 MiB memory in use. Process 2469285 has 248.00 MiB memory in use. Process 2469283 has 248.00 MiB memory in use. Process 2469270 has 248.00 MiB memory in use. Including non-PyTorch memory, this process has 364.00 MiB memory in use. Process 2469282 has 290.00 MiB memory in use. Process 2469284 has 2.62 GiB memory in use. Process 2469276 has 292.00 MiB memory in use. Process 2469277 has 17.92 GiB memory in use. Of the allocated memory 79.63 MiB is allocated by PyTorch, and 2.37 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:42:49] [3/52 done] dpctgan_eps15_seed1: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: aim50_eps5_seed0 (model aim, seed 0, ε=5.0)
+[15:42:49] ======================================================================
+[15:42:49] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:49] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=5, δ=1.64e-05).
+[15:42:49]   AIM rounds capped at 150 (library default would be 800).
+[15:42:49] 50
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ aim50_eps5_seed0 failed after 7.7s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:49] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:49] The above exception was the direct cause of the following exception:
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:49]     self.AIM(data, workload)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:49]     return self.values.flatten() if flatten else self.values
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:49]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:49] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:49] [4/52 done] aim50_eps5_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps1_seed0 (model dpctgan, seed 0, ε=1.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=1, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py:1827: FutureWarning: Using a non-full backward hook when the forward contains multiple autograd Nodes is deprecated and will be removed in future versions. This hook will be missing some grad_input. Please use register_full_backward_hook to get the documented behavior.
+[15:42:49]   self._maybe_warn_non_full_backward_hook(args, result, grad_fn)
+[15:42:49] ❌ dpctgan_eps1_seed0 failed after 8.0s: OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 23.60 GiB of which 3.75 MiB is free. Process 2468746 has 224.00 MiB memory in use. Process 2469271 has 394.00 MiB memory in use. Including non-PyTorch memory, this process has 368.00 MiB memory in use. Process 2469278 has 394.00 MiB memory in use. Process 2469285 has 248.00 MiB memory in use. Process 2469283 has 248.00 MiB memory in use. Process 2469270 has 248.00 MiB memory in use. Process 2469274 has 364.00 MiB memory in use. Process 2469282 has 290.00 MiB memory in use. Process 2469284 has 2.62 GiB memory in use. Process 2469276 has 292.00 MiB memory in use. Process 2469277 has 17.92 GiB memory in use. Of the allocated memory 83.24 MiB is allocated by PyTorch, and 2.76 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 398, in train
+[15:42:49]     optimizerD.step()
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py", line 330, in dp_step
+[15:42:49]     self.privacy_engine.step(is_empty)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py", line 458, in step
+[15:42:49]     self.clipper.clip_and_accumulate()
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/per_sample_gradient_clip.py", line 198, in clip_and_accumulate
+[15:42:49]     grad_after_clip=self._scale_summed_grad(summed_grad, batch_size),
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/per_sample_gradient_clip.py", line 275, in _scale_summed_grad
+[15:42:49]     return summed_grad / batch_size
+[15:42:49] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 0 has a total capacity of 23.60 GiB of which 3.75 MiB is free. Process 2468746 has 224.00 MiB memory in use. Process 2469271 has 394.00 MiB memory in use. Including non-PyTorch memory, this process has 368.00 MiB memory in use. Process 2469278 has 394.00 MiB memory in use. Process 2469285 has 248.00 MiB memory in use. Process 2469283 has 248.00 MiB memory in use. Process 2469270 has 248.00 MiB memory in use. Process 2469274 has 364.00 MiB memory in use. Process 2469282 has 290.00 MiB memory in use. Process 2469284 has 2.62 GiB memory in use. Process 2469276 has 292.00 MiB memory in use. Process 2469277 has 17.92 GiB memory in use. Of the allocated memory 83.24 MiB is allocated by PyTorch, and 2.76 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:42:49] [5/52 done] dpctgan_eps1_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps15_seed0 (model dpctgan, seed 0, ε=15.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ dpctgan_eps15_seed0 failed after 8.0s: RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 296, in train
+[15:42:49]     mone = one * -1
+[15:42:49] RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+[15:42:49] [6/52 done] dpctgan_eps15_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: aim50_eps1_seed0 (model aim, seed 0, ε=1.0)
+[15:42:49] ======================================================================
+[15:42:49] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:49] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=1, δ=1.64e-05).
+[15:42:49]   AIM rounds capped at 150 (library default would be 800).
+[15:42:49] 50
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ aim50_eps1_seed0 failed after 7.9s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:49] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:49] The above exception was the direct cause of the following exception:
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:49]     self.AIM(data, workload)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:49]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:49]     return self.values.flatten() if flatten else self.values
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:49]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:49] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:49] [7/52 done] aim50_eps1_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps20_seed0 (model dpctgan, seed 0, ε=20.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=20, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ dpctgan_eps20_seed0 failed after 8.2s: RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 296, in train
+[15:42:49]     mone = one * -1
+[15:42:49] RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+[15:42:49] [8/52 done] dpctgan_eps20_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: dpctgan_eps10_seed0 (model dpctgan, seed 0, ε=10.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=10, δ=1.64e-05).
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:638: UserWarning: The sample rate will be defined from ``batch_size`` and ``sample_size``.The returned privacy budget will be incorrect.
+[15:42:49]   warnings.warn(
+[15:42:49] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/opacus/privacy_engine.py:229: UserWarning: Secure RNG turned off. This is perfectly fine for experimentation as it allows for much faster training performance, but remember to turn it on and retrain one last time before production with ``secure_rng`` turned on.
+[15:42:49]   warnings.warn(
+[15:42:49] ❌ dpctgan_eps10_seed0 failed after 8.6s: RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 512, in fit
+[15:42:49]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/dpctgan.py", line 296, in train
+[15:42:49]     mone = one * -1
+[15:42:49] RuntimeError: CUDA error: out of memory
+[15:42:49] CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+[15:42:49] For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+[15:42:49] Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
+
+[15:42:49] [9/52 done] dpctgan_eps10_seed0: failed
+
+[15:42:49] ======================================================================
+[15:42:49] ▶️  RUN: mst_eps1_seed0 (model mst, seed 0, ε=1.0)
+[15:42:49] ======================================================================
+[15:42:49] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:49] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:49]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:49]   Guarantee recorded as (ε=1, δ=1.64e-05).
+[15:42:49] ❌ mst_eps1_seed0 failed after 0.8s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:49] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:49] The above exception was the direct cause of the following exception:
+
+[15:42:49] Traceback (most recent call last):
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:49]     self._model.fit(
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:49]     self.MST(data, self.epsilon, self.delta)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:49]     log1 = self.measure(data, cliques, sigma)
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:49]     x = np.asarray(data.project(proj).datavector())
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:49]     return self.values.flatten() if flatten else self.values
+[15:42:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:49]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:49] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:49] [10/52 done] mst_eps1_seed0: failed
+
+[15:42:50] ======================================================================
+[15:42:50] ▶️  RUN: mst_eps10_seed0 (model mst, seed 0, ε=10.0)
+[15:42:50] ======================================================================
+[15:42:50] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:50] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:50] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:50]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:50]   Guarantee recorded as (ε=10, δ=1.64e-05).
+[15:42:50] ❌ mst_eps10_seed0 failed after 0.8s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:50] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:50] The above exception was the direct cause of the following exception:
+
+[15:42:50] Traceback (most recent call last):
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:50]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:50]     self._model.fit(
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:50]     self.MST(data, self.epsilon, self.delta)
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:50]     log1 = self.measure(data, cliques, sigma)
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:50]     x = np.asarray(data.project(proj).datavector())
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:50]     return self.values.flatten() if flatten else self.values
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:50]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:50] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:50] [11/52 done] mst_eps10_seed0: failed
+
+[15:42:50] ======================================================================
+[15:42:50] ▶️  RUN: aim50_eps15_seed0 (model aim, seed 0, ε=15.0)
+[15:42:50] ======================================================================
+[15:42:50] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:50] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:50] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:50] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:50]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:50]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:50]   AIM rounds capped at 150 (library default would be 800).
+[15:42:50] 50
+[15:42:50] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:50]   warnings.warn(
+[15:42:50] ❌ aim50_eps15_seed0 failed after 1.1s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:50] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:50] The above exception was the direct cause of the following exception:
+
+[15:42:50] Traceback (most recent call last):
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:50]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:50]     self._model.fit(
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:50]     self.AIM(data, workload)
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:50]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:50]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:50]     return self.values.flatten() if flatten else self.values
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:50]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:50] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:50] [12/52 done] aim50_eps15_seed0: failed
+
+[15:42:50] ======================================================================
+[15:42:50] ▶️  RUN: mst_eps15_seed1 (model mst, seed 1, ε=15.0)
+[15:42:50] ======================================================================
+[15:42:50] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:50] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:50] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:50]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:50]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:50] ❌ mst_eps15_seed1 failed after 0.8s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:50] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:50] The above exception was the direct cause of the following exception:
+
+[15:42:50] Traceback (most recent call last):
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:50]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:50]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:50]     self._model.fit(
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:50]     self.MST(data, self.epsilon, self.delta)
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:50]     log1 = self.measure(data, cliques, sigma)
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:50]     x = np.asarray(data.project(proj).datavector())
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:50]     return self.values.flatten() if flatten else self.values
+[15:42:50]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:50]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:50] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:50] [13/52 done] mst_eps15_seed1: failed
+
+[15:42:51] ======================================================================
+[15:42:51] ▶️  RUN: mst_eps15_seed2 (model mst, seed 2, ε=15.0)
+[15:42:51] ======================================================================
+[15:42:51] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:51] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:51] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:51]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:51]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:51] ❌ mst_eps15_seed2 failed after 1.1s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:42:51] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:42:51] The above exception was the direct cause of the following exception:
+
+[15:42:51] Traceback (most recent call last):
+[15:42:51]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:51]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:51]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:51]     self._model.fit(
+[15:42:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:51]     self.MST(data, self.epsilon, self.delta)
+[15:42:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:51]     log1 = self.measure(data, cliques, sigma)
+[15:42:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:51]     x = np.asarray(data.project(proj).datavector())
+[15:42:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:42:51]     return self.values.flatten() if flatten else self.values
+[15:42:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:42:51]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:42:51] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:51] [14/52 done] mst_eps15_seed2: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: aim50_eps10_seed0 (model aim, seed 0, ε=10.0)
+[15:42:54] ======================================================================
+[15:42:54] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:54] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=10, δ=1.64e-05).
+[15:42:54]   AIM rounds capped at 150 (library default would be 800).
+[15:42:54] 50
+[15:42:54] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:54]   warnings.warn(
+[15:42:54] ❌ aim50_eps10_seed0 failed after 5.0s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:54]     self.AIM(data, workload)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:54]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:54]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [15/52 done] aim50_eps10_seed0: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: mst_eps8_seed0 (model mst, seed 0, ε=8.0)
+[15:42:54] ======================================================================
+[15:42:54] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=8, δ=1.64e-05).
+[15:42:54] ❌ mst_eps8_seed0 failed after 5.2s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:54]     self.MST(data, self.epsilon, self.delta)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:54]     log1 = self.measure(data, cliques, sigma)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:54]     x = np.asarray(data.project(proj).datavector())
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [16/52 done] mst_eps8_seed0: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: aim50_eps20_seed0 (model aim, seed 0, ε=20.0)
+[15:42:54] ======================================================================
+[15:42:54] Width-limited run: 50 of 234 training columns (top-50 selection, committed JSON).
+[15:42:54] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 25 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 18 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=20, δ=1.64e-05).
+[15:42:54]   AIM rounds capped at 150 (library default would be 800).
+[15:42:54] 50
+[15:42:54] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:42:54]   warnings.warn(
+[15:42:54] ❌ aim50_eps20_seed0 failed after 5.4s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:42:54]     self.AIM(data, workload)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:42:54]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:42:54]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [17/52 done] aim50_eps20_seed0: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: mst_eps15_seed0 (model mst, seed 0, ε=15.0)
+[15:42:54] ======================================================================
+[15:42:54] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:42:54] ❌ mst_eps15_seed0 failed after 5.1s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:54]     self.MST(data, self.epsilon, self.delta)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:54]     log1 = self.measure(data, cliques, sigma)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:54]     x = np.asarray(data.project(proj).datavector())
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [18/52 done] mst_eps15_seed0: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: mst_eps5_seed0 (model mst, seed 0, ε=5.0)
+[15:42:54] ======================================================================
+[15:42:54] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=5, δ=1.64e-05).
+[15:42:54] ❌ mst_eps5_seed0 failed after 5.3s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:54]     self.MST(data, self.epsilon, self.delta)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:54]     log1 = self.measure(data, cliques, sigma)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:54]     x = np.asarray(data.project(proj).datavector())
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [19/52 done] mst_eps5_seed0: failed
+
+[15:42:54] ======================================================================
+[15:42:54] ▶️  RUN: mst_eps20_seed0 (model mst, seed 0, ε=20.0)
+[15:42:54] ======================================================================
+[15:42:54] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:42:54] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:42:54] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:42:54]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:42:54]   Guarantee recorded as (ε=20, δ=1.64e-05).
+[15:42:54] ❌ mst_eps20_seed0 failed after 4.8s: RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 742, in backends
+[15:42:54]     backend = _init_backend(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 828, in _init_backend
+[15:42:54]     backend = registration.factory()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 518, in factory
+[15:42:54]     return xla_client.make_c_api_client(plugin_name, updated_options, None)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jaxlib/xla_client.py", line 153, in make_c_api_client
+[15:42:54]     return _xla.get_c_api_client(plugin_name, options, distributed_client)
+[15:42:54] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:42:54] During handling of the above exception, another exception occurred:
+
+[15:42:54] Traceback (most recent call last):
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:42:54]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:42:54]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:42:54]     self._model.fit(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:42:54]     self.MST(data, self.epsilon, self.delta)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:42:54]     log1 = self.measure(data, cliques, sigma)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:42:54]     x = np.asarray(data.project(proj).datavector())
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py", line 180, in project
+[15:42:54]     return Factor(data.domain, jnp.asarray(data.datavector(flatten=False)))
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 383, in asarray
+[15:42:54]     return array(a, dtype=dtype, copy=bool(copy), order=order, device=device)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array.py", line 173, in array
+[15:42:54]     return api.device_put(object)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/api.py", line 2613, in device_put
+[15:42:54]     out_flat = dispatch.device_put_p.bind(
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 536, in bind
+[15:42:54]     return self._true_bind(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 552, in _true_bind
+[15:42:54]     return self.bind_with_trace(prev_trace, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 562, in bind_with_trace
+[15:42:54]     return trace.process_primitive(self, args, params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/core.py", line 1066, in process_primitive
+[15:42:54]     return primitive.impl(*args, **params)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 570, in _batched_device_put_impl
+[15:42:54]     y = _device_put_impl(x, device=device, src=src, copy=cp)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 559, in _device_put_impl
+[15:42:54]     return _device_put_sharding_impl(x, aval, device, copy)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/dispatch.py", line 518, in _device_put_sharding_impl
+[15:42:54]     sh = SingleDeviceSharding(pxla.get_default_device()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/interpreters/pxla.py", line 1675, in get_default_device
+[15:42:54]     return config.default_device.value or xb.local_devices()[0]
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 1010, in local_devices
+[15:42:54]     process_index = get_backend(backend).process_index()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 876, in get_backend
+[15:42:54]     return _get_backend_uncached(platform)
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 855, in _get_backend_uncached
+[15:42:54]     bs = backends()
+[15:42:54]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/xla_bridge.py", line 758, in backends
+[15:42:54]     raise RuntimeError(err_msg)
+[15:42:54] RuntimeError: Unable to initialize backend 'cuda': Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)
+
+[15:42:54] [20/52 done] mst_eps20_seed0: failed
+
+[15:43:20] ======================================================================
+[15:43:20] ▶️  RUN: gaussian_copula_seed2 (model gaussian_copula, seed 2)
+[15:43:20] ======================================================================
+[15:43:20] No formal privacy guarantee (non-DP model).
+[15:43:20] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:20] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:20] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/sdv/single_table/base.py:139: UserWarning: We strongly recommend saving the metadata using 'save_to_json' for replicability in future SDV versions.
+[15:43:20]   warnings.warn(
+[15:43:20] Saved fitted generator (local only, gitignored) -> /home/translated/kon/output/generate/models/gaussian_copula_seed2.pkl
+[15:43:20] Saved SDV metadata (for replicability) -> /home/translated/kon/output/generate/DT4H_SDV_Metadata_gaussian_copula_seed2.json
+[15:43:20] Sampling 1549 rows...
+[15:43:20]   Categorical representation already aligned (0 cells changed).
+[15:43:20] ✅ No verbatim training records in the synthetic output (1549 rows, 256 columns compared).
+[15:43:20]   Decoded sentinels back to null in 49 numeric column(s): 35294 cells restored to null ('no event' / 'not measured').
+[15:43:20] ✅ gaussian_copula_seed2: 1549 x 256 -> /home/translated/kon/output/generate/DT4H_Synthetic_gaussian_copula_seed2.csv (39.5s)
+[15:43:20] [21/52 done] gaussian_copula_seed2: ok
+
+[15:43:26] ======================================================================
+[15:43:26] ▶️  RUN: gaussian_copula_seed1 (model gaussian_copula, seed 1)
+[15:43:26] ======================================================================
+[15:43:26] No formal privacy guarantee (non-DP model).
+[15:43:26] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:26] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:26] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/sdv/single_table/base.py:139: UserWarning: We strongly recommend saving the metadata using 'save_to_json' for replicability in future SDV versions.
+[15:43:26]   warnings.warn(
+[15:43:26] Saved fitted generator (local only, gitignored) -> /home/translated/kon/output/generate/models/gaussian_copula_seed1.pkl
+[15:43:26] Saved SDV metadata (for replicability) -> /home/translated/kon/output/generate/DT4H_SDV_Metadata_gaussian_copula_seed1.json
+[15:43:26] Sampling 1549 rows...
+[15:43:26]   Categorical representation already aligned (0 cells changed).
+[15:43:26] ✅ No verbatim training records in the synthetic output (1549 rows, 256 columns compared).
+[15:43:26]   Decoded sentinels back to null in 48 numeric column(s): 35414 cells restored to null ('no event' / 'not measured').
+[15:43:26] ✅ gaussian_copula_seed1: 1549 x 256 -> /home/translated/kon/output/generate/DT4H_Synthetic_gaussian_copula_seed1.csv (45.3s)
+[15:43:26] [22/52 done] gaussian_copula_seed1: ok
+
+[15:43:26] ======================================================================
+[15:43:26] ▶️  RUN: gaussian_copula_seed0 (model gaussian_copula, seed 0)
+[15:43:26] ======================================================================
+[15:43:26] No formal privacy guarantee (non-DP model).
+[15:43:26] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:26] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:26] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/sdv/single_table/base.py:139: UserWarning: We strongly recommend saving the metadata using 'save_to_json' for replicability in future SDV versions.
+[15:43:26]   warnings.warn(
+[15:43:26] Saved fitted generator (local only, gitignored) -> /home/translated/kon/output/generate/models/gaussian_copula_seed0.pkl
+[15:43:26] Saved SDV metadata (for replicability) -> /home/translated/kon/output/generate/DT4H_SDV_Metadata_gaussian_copula_seed0.json
+[15:43:26] Sampling 1549 rows...
+[15:43:26]   Categorical representation already aligned (0 cells changed).
+[15:43:26] ✅ No verbatim training records in the synthetic output (1549 rows, 256 columns compared).
+[15:43:26]   Decoded sentinels back to null in 48 numeric column(s): 35671 cells restored to null ('no event' / 'not measured').
+[15:43:26] ✅ gaussian_copula_seed0: 1549 x 256 -> /home/translated/kon/output/generate/DT4H_Synthetic_gaussian_copula_seed0.csv (45.4s)
+[15:43:26] [23/52 done] gaussian_copula_seed0: ok
+
+[15:43:35] ======================================================================
+[15:43:35] ▶️  RUN: aim40_eps10_seed0 (model aim, seed 0, ε=10.0)
+[15:43:35] ======================================================================
+[15:43:35] Width-limited run: 40 of 234 training columns (top-40 selection, committed JSON).
+[15:43:35] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:43:35] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:35] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:35]   Bounds for 21 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 16 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:43:35]   Guarantee recorded as (ε=10, δ=1.64e-05).
+[15:43:35]   AIM rounds capped at 120 (library default would be 640).
+[15:43:35] 40
+[15:43:35] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:43:35]   warnings.warn(
+[15:43:35] ❌ aim40_eps10_seed0 failed after 9.6s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:43:35] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:43:35] The above exception was the direct cause of the following exception:
+
+[15:43:35] Traceback (most recent call last):
+[15:43:35]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:43:35]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:43:35]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:43:35]     self._model.fit(
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:43:35]     self.AIM(data, workload)
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:43:35]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:43:35]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:43:35]     return self.values.flatten() if flatten else self.values
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:43:35]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:43:35] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:43:35] [24/52 done] aim40_eps10_seed0: failed
+
+[15:43:35] ======================================================================
+[15:43:35] ▶️  RUN: aim40_eps15_seed0 (model aim, seed 0, ε=15.0)
+[15:43:35] ======================================================================
+[15:43:35] Width-limited run: 40 of 234 training columns (top-40 selection, committed JSON).
+[15:43:35] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:43:35] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:35] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:35]   Bounds for 21 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 16 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:43:35]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:43:35]   AIM rounds capped at 120 (library default would be 640).
+[15:43:35] 40
+[15:43:35] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:43:35]   warnings.warn(
+[15:43:35] ❌ aim40_eps15_seed0 failed after 9.6s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:43:35] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:43:35] The above exception was the direct cause of the following exception:
+
+[15:43:35] Traceback (most recent call last):
+[15:43:35]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:43:35]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:43:35]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:43:35]     self._model.fit(
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:43:35]     self.AIM(data, workload)
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:43:35]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:43:35]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:43:35]     return self.values.flatten() if flatten else self.values
+[15:43:35]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:43:35]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:43:35] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:43:35] [25/52 done] aim40_eps15_seed0: failed
+
+[15:43:37] ======================================================================
+[15:43:37] ▶️  RUN: aim40_eps20_seed0 (model aim, seed 0, ε=20.0)
+[15:43:37] ======================================================================
+[15:43:37] Width-limited run: 40 of 234 training columns (top-40 selection, committed JSON).
+[15:43:37] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:43:37] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:43:37] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:43:37]   Bounds for 21 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 16 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:43:37]   Guarantee recorded as (ε=20, δ=1.64e-05).
+[15:43:37]   AIM rounds capped at 120 (library default would be 640).
+[15:43:37] 40
+[15:43:37] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:43:37]   warnings.warn(
+[15:43:37] ❌ aim40_eps20_seed0 failed after 1.2s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:43:37] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:43:37] The above exception was the direct cause of the following exception:
+
+[15:43:37] Traceback (most recent call last):
+[15:43:37]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:43:37]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:43:37]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:43:37]     self._model.fit(
+[15:43:37]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:43:37]     self.AIM(data, workload)
+[15:43:37]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in AIM
+[15:43:37]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:37]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 166, in <dictcomp>
+[15:43:37]     answers = {cl: data.project(cl).datavector() for cl in candidates}
+[15:43:37]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:43:37]     return self.values.flatten() if flatten else self.values
+[15:43:37]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:43:37]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:43:37] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:43:37] [26/52 done] aim40_eps20_seed0: failed
+
+[15:49:41] ======================================================================
+[15:49:41] ▶️  RUN: ddpm_seed1 (model ddpm, seed 1)
+[15:49:41] ======================================================================
+[15:49:41] No formal privacy guarantee (non-DP model).
+[15:49:41] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:41] ❌ ddpm_seed1 failed after 363.8s: OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:41] Traceback (most recent call last):
+[15:49:41]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:41]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:41]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/ddpm.py", line 180, in fit
+[15:49:41]     self._model = Denoiser(self._dim).to(device)
+[15:49:41]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:41]     return self._apply(convert)
+[15:49:41]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:41]     module._apply(fn)
+[15:49:41]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:41]     module._apply(fn)
+[15:49:41]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:41]     param_applied = fn(param)
+[15:49:41]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:41]     return t.to(
+[15:49:41] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:41] [27/52 done] ddpm_seed1: failed
+
+[15:49:46] ======================================================================
+[15:49:46] ▶️  RUN: ddpm_seed0 (model ddpm, seed 0)
+[15:49:46] ======================================================================
+[15:49:46] No formal privacy guarantee (non-DP model).
+[15:49:46] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:46] ❌ ddpm_seed0 failed after 371.0s: OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:46] Traceback (most recent call last):
+[15:49:46]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:46]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:46]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/ddpm.py", line 180, in fit
+[15:49:46]     self._model = Denoiser(self._dim).to(device)
+[15:49:46]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:46]     return self._apply(convert)
+[15:49:46]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:46]     module._apply(fn)
+[15:49:46]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:46]     module._apply(fn)
+[15:49:46]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:46]     param_applied = fn(param)
+[15:49:46]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:46]     return t.to(
+[15:49:46] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:46] [28/52 done] ddpm_seed0: failed
+
+[15:49:49] ======================================================================
+[15:49:49] ▶️  RUN: ddpm_seed2 (model ddpm, seed 2)
+[15:49:49] ======================================================================
+[15:49:49] No formal privacy guarantee (non-DP model).
+[15:49:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:49] ❌ ddpm_seed2 failed after 2.5s: OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:49] Traceback (most recent call last):
+[15:49:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/ddpm.py", line 180, in fit
+[15:49:49]     self._model = Denoiser(self._dim).to(device)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:49]     return self._apply(convert)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:49]     module._apply(fn)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:49]     module._apply(fn)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:49]     param_applied = fn(param)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:49]     return t.to(
+[15:49:49] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:49] [29/52 done] ddpm_seed2: failed
+
+[15:49:49] ======================================================================
+[15:49:49] ▶️  RUN: ddpm_g_seed0 (model ddpm, seed 0)
+[15:49:49] ======================================================================
+[15:49:49] No formal privacy guarantee (non-DP model).
+[15:49:49] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:49]   logic guidance ON: 106 implication rules as a sampling-time prior (scale 5.0).
+[15:49:49] ❌ ddpm_g_seed0 failed after 2.6s: OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:49] Traceback (most recent call last):
+[15:49:49]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:49]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:49]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/ddpm.py", line 180, in fit
+[15:49:49]     self._model = Denoiser(self._dim).to(device)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:49]     return self._apply(convert)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:49]     module._apply(fn)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:49]     module._apply(fn)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:49]     param_applied = fn(param)
+[15:49:49]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:49]     return t.to(
+[15:49:49] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:49] [30/52 done] ddpm_g_seed0: failed
+
+[15:49:51] ======================================================================
+[15:49:51] ▶️  RUN: patectgan_eps1_seed0 (model patectgan, seed 0, ε=1.0)
+[15:49:51] ======================================================================
+[15:49:51] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:49:51] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:51]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:49:51]   Guarantee recorded as (ε=1, δ=1.64e-05).
+[15:49:51] ❌ patectgan_eps1_seed0 failed after 2.4s: OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:51] Traceback (most recent call last):
+[15:49:51]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:51]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:51]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:49:51]     self._model.fit(
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 551, in fit
+[15:49:51]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 243, in train
+[15:49:51]     ).to(self._device)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:51]     return self._apply(convert)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:51]     module._apply(fn)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:51]     module._apply(fn)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:51]     module._apply(fn)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:51]     param_applied = fn(param)
+[15:49:51]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:51]     return t.to(
+[15:49:51] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:51] [31/52 done] patectgan_eps1_seed0: failed
+
+[15:49:52] ======================================================================
+[15:49:52] ▶️  RUN: patectgan_eps5_seed0 (model patectgan, seed 0, ε=5.0)
+[15:49:52] ======================================================================
+[15:49:52] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:49:52] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:52]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:49:52]   Guarantee recorded as (ε=5, δ=1.64e-05).
+[15:49:52] ❌ patectgan_eps5_seed0 failed after 2.7s: OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:52] Traceback (most recent call last):
+[15:49:52]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:52]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:52]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:49:52]     self._model.fit(
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 551, in fit
+[15:49:52]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 243, in train
+[15:49:52]     ).to(self._device)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:52]     return self._apply(convert)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:52]     module._apply(fn)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:52]     module._apply(fn)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:52]     module._apply(fn)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:52]     param_applied = fn(param)
+[15:49:52]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:52]     return t.to(
+[15:49:52] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Including non-PyTorch memory, this process has 472.00 MiB memory in use. Process 2469266 has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:52] [32/52 done] patectgan_eps5_seed0: failed
+
+[15:49:55] ======================================================================
+[15:49:55] ▶️  RUN: mst_eps0p5_seed0 (model mst, seed 0, ε=0.5)
+[15:49:55] ======================================================================
+[15:49:55] Differential privacy ON -- total epsilon budget: 0.5 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:49:55] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:49:55] Training... (time limit: 14400s for fit, 14400s for sampling)
+[15:49:55]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:49:55]   Guarantee recorded as (ε=0.5, δ=1.64e-05).
+[15:49:55] ❌ mst_eps0p5_seed0 failed after 2.6s: RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:49:55] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:49:55] The above exception was the direct cause of the following exception:
+
+[15:49:55] Traceback (most recent call last):
+[15:49:55]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:55]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:55]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:49:55]     self._model.fit(
+[15:49:55]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 99, in fit
+[15:49:55]     self.MST(data, self.epsilon, self.delta)
+[15:49:55]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 116, in MST
+[15:49:55]     log1 = self.measure(data, cliques, sigma)
+[15:49:55]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/mst/mst.py", line 138, in measure
+[15:49:55]     x = np.asarray(data.project(proj).datavector())
+[15:49:55]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/factor.py", line 265, in datavector
+[15:49:55]     return self.values.flatten() if flatten else self.values
+[15:49:55]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/jax/_src/numpy/array_methods.py", line 205, in _flatten
+[15:49:55]     return lax_numpy.ravel(self, order=order, out_sharding=out_sharding)
+[15:49:55] RuntimeError: Bad StatusOr access: RESOURCE_EXHAUSTED: : CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:49:55] [33/52 done] mst_eps0p5_seed0: failed
+
+[15:49:56] ======================================================================
+[15:49:56] ▶️  RUN: patectgan_eps15_seed0 (model patectgan, seed 0, ε=15.0)
+[15:49:56] ======================================================================
+[15:49:56] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:49:56] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:49:56]   Bounds for 66 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 54 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:49:56]   Guarantee recorded as (ε=15, δ=1.64e-05).
+[15:49:56] ❌ patectgan_eps15_seed0 failed after 5.0s: OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[15:49:56] Traceback (most recent call last):
+[15:49:56]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:49:56]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:49:56]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:49:56]     self._model.fit(
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 551, in fit
+[15:49:56]     self.train(data, transformer=transformer, categorical_columns=categorical_columns, ordinal_columns=ordinal_columns, continuous_columns=continuous_columns, preprocessor_eps=preprocessor_eps, nullable=nullable)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/pytorch/nn/patectgan.py", line 243, in train
+[15:49:56]     ).to(self._device)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1340, in to
+[15:49:56]     return self._apply(convert)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:56]     module._apply(fn)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:56]     module._apply(fn)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 900, in _apply
+[15:49:56]     module._apply(fn)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 927, in _apply
+[15:49:56]     param_applied = fn(param)
+[15:49:56]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1326, in convert
+[15:49:56]     return t.to(
+[15:49:56] torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 MiB. GPU 1 has a total capacity of 23.60 GiB of which 1.75 MiB is free. Process 2469279 has 17.93 GiB memory in use. Process 2469262 has 472.00 MiB memory in use. Including non-PyTorch memory, this process has 3.18 GiB memory in use. Process 2469280 has 224.00 MiB memory in use. Process 2469285 has 224.00 MiB memory in use. Process 2469283 has 224.00 MiB memory in use. Process 2469270 has 224.00 MiB memory in use. Process 2469274 has 224.00 MiB memory in use. Process 2469282 has 224.00 MiB memory in use. Process 2469284 has 226.00 MiB memory in use. Process 2469276 has 226.00 MiB memory in use. Process 2469277 has 226.00 MiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+
+[15:49:56] [34/52 done] patectgan_eps15_seed0: failed
+
+[15:53:20] ======================================================================
+[15:53:20] ▶️  RUN: aim40_eps8_seed0 (model aim, seed 0, ε=8.0)
+[15:53:20] ======================================================================
+[15:53:20] Width-limited run: 40 of 234 training columns (top-40 selection, committed JSON).
+[15:53:20] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[15:53:20] CPU-only synthesizer (no GPU acceleration available for this method).
+[15:53:20] Training... (time limit: 21600s for fit, 21600s for sampling)
+[15:53:20]   Bounds for 21 continuous column(s) taken from the REVIEWED public domain declaration (sha256 7b486344dcd7...); 16 of them widened to the public sentinel bound. No epsilon is spent on bound discovery: the bounds are not a function of this data.
+[15:53:20]   Guarantee recorded as (ε=8, δ=1.64e-05).
+[15:53:20]   AIM rounds capped at 120 (library default would be 640).
+[15:53:20] 40
+[15:53:20] /home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/dataset.py:87: UserWarning: Pandas dataframe inputs are deprecated, please pass in a dictionary of numpy arrays instead.
+[15:53:20]   warnings.warn(
+[15:53:20] Initial Sigma 7.228746501142846
+[15:53:20] ❌ aim40_eps8_seed0 failed after 599.7s: XlaRuntimeError: RESOURCE_EXHAUSTED: Underlying backend ran out of memory trying to instantiate command buffer with 40 (total of 1 alive graphs in the process). You can try to (a) Give more memory to the driver by reducing XLA_CLIENT_MEM_FRACTION (b) Disable command buffers with 'XLA_FLAGS=--xla_gpu_enable_command_buffer=' (empty set). Original error: Failed to instantiate CUDA graph: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+[15:53:20] jax.errors.SimplifiedTraceback: For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+[15:53:20] The above exception was the direct cause of the following exception:
+
+[15:53:20] Traceback (most recent call last):
+[15:53:20]   File "/home/translated/kon/pipeline/steps/generate/step.py", line 413, in _run_one
+[15:53:20]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[15:53:20]   File "/home/translated/kon/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 285, in fit
+[15:53:20]     self._model.fit(
+[15:53:20]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 125, in fit
+[15:53:20]     self.AIM(data, workload)
+[15:53:20]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/snsynth/aim/aim.py", line 181, in AIM
+[15:53:20]     model = estimation.mirror_descent(data.domain, measurements, iters=1000, marginal_oracle=marginal_oracles.message_passing_stable)
+[15:53:20]   File "/home/translated/SyntheticDataGenerationTabularDT4H/.synthenv/lib/python3.10/site-packages/mbi/estimation.py", line 216, in mirror_descent
+[15:53:20]     potentials, loss, alpha, mu, state = update(potentials, alpha, state)
+[15:53:20] jaxlib._jax.XlaRuntimeError: RESOURCE_EXHAUSTED: Underlying backend ran out of memory trying to instantiate command buffer with 40 (total of 1 alive graphs in the process). You can try to (a) Give more memory to the driver by reducing XLA_CLIENT_MEM_FRACTION (b) Disable command buffers with 'XLA_FLAGS=--xla_gpu_enable_command_buffer=' (empty set). Original error: Failed to instantiate CUDA graph: CUDA_ERROR_OUT_OF_MEMORY: out of memory
+
+[15:53:20] [35/52 done] aim40_eps8_seed0: failed
+[15:55:38] [36/52 done] tvae_seed0: failed
+[15:55:39] [37/52 done] tvae_seed1: failed
+[15:55:41] [38/52 done] tvae_seed2: failed
+[15:55:43] [39/52 done] ctgan_seed0: failed
+[15:56:00] [40/52 done] ctgan_seed1: failed
+[15:56:48] [41/52 done] ctgan_seed2: failed

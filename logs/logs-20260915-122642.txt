@@ -1,0 +1,19 @@
+[12:25:35] ======================================================================
+[12:25:35] Run started: 2026-09-15T10:25:35.393630+00:00
+[12:25:35] Command: main.py --extended --data-dir /mnt/d02/fhir_data/feast-output-data/myFhirServer/dataset/study1-fs/b72349eb-6667-4e6a-8337-5157ebc49a3d/
+[12:25:35] ======================================================================
+[12:25:35] ⏭️  Skipping 'load_data' (already completed). Use --force or --force-step load_data to rerun.
+[12:25:35] ⏭️  Skipping 'profile_data' (already completed). Use --force or --force-step profile_data to rerun.
+[12:25:35] ⏭️  Skipping 'preprocess' (already completed). Use --force or --force-step preprocess to rerun.
+[12:25:35] ⏭️  Skipping 'profile_preprocessed_data' (already completed). Use --force or --force-step profile_preprocessed_data to rerun.
+[12:25:35] ⏭️  Skipping 'generate' (already completed). Use --force or --force-step generate to rerun.
+[12:25:35] ⏭️  Skipping 'evaluate' (already completed). Use --force or --force-step evaluate to rerun.
+[12:25:35] ⏭️  Skipping 'coherence' (already completed). Use --force or --force-step coherence to rerun.
+[12:25:35] ⏭️  Skipping 'survival' (already completed). Use --force or --force-step survival to rerun.
+[12:25:35] ⏭️  Skipping 'utility' (already completed). Use --force or --force-step utility to rerun.
+[12:25:35] ⏭️  Skipping 'privacy' (already completed). Use --force or --force-step privacy to rerun.
+[12:25:35] ⏭️  Skipping 'attacks' (already completed). Use --force or --force-step attacks to rerun.
+[12:25:35] ⏭️  Skipping 'figures' (already completed). Use --force or --force-step figures to rerun.
+[12:25:35] ⏭️  Skipping 'release_docs' (already completed). Use --force or --force-step release_docs to rerun.
+
+[12:25:35] Run finished: 2026-09-15T10:25:35.397358+00:00
