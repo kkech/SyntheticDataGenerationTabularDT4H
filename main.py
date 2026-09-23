@@ -402,6 +402,69 @@ def print_status(config: PipelineConfig | None = None) -> None:
             print(f"  {step.name}: ❌ failed at {info.get('failed_at')} -- {info.get('error')}")
 
 
+def write_deployment_manifest(config: PipelineConfig, model: str) -> str:
+    """After a --model run, write ONE stable, fixed-name JSON file naming
+    exactly where the synthetic CSV and every analysis report ended up --
+    so a downstream program consuming this deployment's output only ever
+    needs to know this single file's name, never this repo's internal
+    run-id/step-directory naming conventions.
+
+    Every report path is checked for actual existence (None if absent --
+    e.g. a step skipped via --only) rather than assumed, since '--model'
+    does not restrict which steps run, only what generate's plan
+    contains. Reads the real generation summary rather than assuming
+    success, so the manifest is honest even if called after a failure."""
+    import json as _json
+    import os
+    from datetime import timezone
+
+    def _existing(path: str) -> str | None:
+        return path if os.path.exists(path) else None
+
+    run_record = None
+    summary_path = os.path.join(config.step_dir("generate"), "DT4H_Generation_Summary.json")
+    if os.path.exists(summary_path):
+        with open(summary_path) as f:
+            gen_summary = _json.load(f)
+        matches = [r for r in gen_summary.get("runs", [])
+                  if r.get("synthesizer") == model or r.get("base_synthesizer") == model]
+        run_record = matches[0] if matches else None
+
+    reports = {}
+    for step_name, filename in (("evaluate", "DT4H_Evaluation"), ("coherence", "DT4H_Coherence_Audit"),
+                                ("survival", "DT4H_Survival_Fidelity"), ("utility", "DT4H_Utility_TSTR"),
+                                ("privacy", "DT4H_Privacy_Assessment"), ("attacks", "DT4H_Privacy_Attacks")):
+        step_dir = config.step_dir(step_name)
+        reports[step_name] = {
+            "md": _existing(os.path.join(step_dir, f"{filename}.md")),
+            "json": _existing(os.path.join(step_dir, f"{filename}.json")),
+        }
+    reports["figures_dir"] = _existing(config.step_dir("figures"))
+    release_dir = config.step_dir("release_docs")
+    reports["datasheet"] = _existing(os.path.join(release_dir, "DT4H_Datasheet.md"))
+    reports["codebook"] = _existing(os.path.join(release_dir, "DT4H_Codebook.md"))
+    if run_record and run_record.get("run_id"):
+        reports["release_label"] = _existing(
+            os.path.join(release_dir, "labels", f"DT4H_Label_{run_record['run_id']}.json"))
+
+    manifest = {
+        "model": model,
+        "run_id": run_record.get("run_id") if run_record else None,
+        "status": run_record.get("status") if run_record else None,
+        "epsilon": run_record.get("epsilon") if run_record else None,
+        "seed": run_record.get("seed") if run_record else None,
+        "synthetic_csv": run_record.get("output_path") if run_record else None,
+        "output_dir": os.path.abspath(config.output_dir),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "reports": reports,
+    }
+    manifest_path = os.path.join(config.output_dir, "DT4H_Deployment_Manifest.json")
+    os.makedirs(config.output_dir, exist_ok=True)
+    with open(manifest_path, "w") as f:
+        _json.dump(manifest, f, indent=2)
+    return manifest_path
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="UC1 data preparation pipeline.")
     parser.add_argument("--force", action="store_true", help="Rerun every step, even if already completed.")
@@ -461,6 +524,25 @@ def main() -> None:
                               "in the resolved plan> -- derived from each synthesizer's is_dp "
                               "flag in the registry (pipeline/steps/generate/synthesizers), not "
                               "a hardcoded list. Mutually exclusive with --synthesizers.")
+    synth_filter.add_argument("--model", choices=["mst", "tvae"],
+                         help="Deployment shortcut: run the FULL pipeline (every step) with the "
+                              "generate plan replaced by a single run of this one model -- "
+                              "'mst' at epsilon=15 (the paper's DP operating point), or plain "
+                              "'tvae' -- instead of the full multi-model/multi-epsilon sweep. "
+                              "For running one model at a time, in separate invocations, without "
+                              "needing to know this repo's run-plan/epsilon vocabulary. Writes "
+                              "DT4H_Deployment_Manifest.json in --output-dir naming exactly where "
+                              "the synthetic CSV and every report ended up. Pair with "
+                              "--output-dir so each invocation's output is self-contained. "
+                              "Mutually exclusive with --synthesizers/--dp-only.")
+    parser.add_argument("--output-dir", metavar="PATH",
+                         help="Root directory for every step's output (default: ./output). Also "
+                              "redirects pipeline_status.json into it (normally at the repo "
+                              "root), so a run against one --output-dir never thinks a step is "
+                              "already done because SOME OTHER --output-dir's run marked it so -- "
+                              "each output directory is a fully self-contained, independently "
+                              "resumable pipeline run. Set this to give each deployment (site, "
+                              "model, environment) its own output location.")
     parser.add_argument("--status", action="store_true", help="Print step-completion status and exit.")
     parser.add_argument("--min-free-gb", type=float, default=None,
                          help="Override the preflight free-disk requirement (GB). The v3 "
@@ -489,6 +571,8 @@ def main() -> None:
         args.only = list(ANALYSIS_STEPS)
         args.force = True
 
+    import os
+
     # One config from the flags, used identically by preflight and the
     # run, so the pre-launch check always previews what would execute.
     cfg_kwargs = {}
@@ -500,7 +584,35 @@ def main() -> None:
         cfg_kwargs["transfer_folder"] = args.data_dir
     if args.metadata:
         cfg_kwargs["metadata_source"] = args.metadata
+    if args.output_dir:
+        cfg_kwargs["output_dir"] = args.output_dir
+        # status_path does NOT derive from output_dir on its own (unlike
+        # metadata_path/train_output_path/etc in __post_init__) -- it
+        # defaults to a fixed path at the repo root, shared by every
+        # invocation from this checkout regardless of --output-dir. Two
+        # --model runs pointed at two different --output-dir values would
+        # otherwise share ONE status file: the second run would see
+        # 'generate' already completed (by the first model) and skip it
+        # entirely. Deriving it here instead makes each --output-dir a
+        # fully independent, self-contained pipeline run.
+        cfg_kwargs["status_path"] = os.path.join(args.output_dir, "pipeline_status.json")
     cfg = PipelineConfig(**cfg_kwargs) if cfg_kwargs else None
+
+    if args.model:
+        cfg = cfg or PipelineConfig()
+        # One explicit run, in the exact dict shape resolved_run_plan()
+        # itself produces (run_id, synthesizer, seed, epsilon, columns,
+        # timeout_seconds) -- PipelineConfig.run_plan is the documented
+        # override point ("Set run_plan explicitly ... to override the
+        # generated plan entirely").
+        if args.model == "mst":
+            cfg.run_plan = ({"run_id": "mst_eps15_seed0", "synthesizer": "mst", "seed": 0,
+                             "epsilon": 15.0, "columns": None, "timeout_seconds": None},)
+        else:
+            cfg.run_plan = ({"run_id": "tvae_seed0", "synthesizer": "tvae", "seed": 0,
+                             "epsilon": None, "columns": None, "timeout_seconds": None},)
+        print(f"--model {args.model}: generate plan replaced with a single run "
+              f"({cfg.run_plan[0]['run_id']}).")
 
     if args.synthesizers or args.dp_only:
         cfg = cfg or PipelineConfig()
@@ -550,6 +662,9 @@ def main() -> None:
         run_pipeline(config=cfg, force=args.force, force_steps=args.force_step,
                      only=args.only, no_cascade=args.no_cascade,
                      retry_failed_steps=args.retry_failed_step)
+        if args.model:
+            manifest_path = write_deployment_manifest(cfg, args.model)
+            print(f"\n📦 Deployment manifest written -> {manifest_path}")
     finally:
         if handle:
             stop_logging(handle)
