@@ -168,7 +168,8 @@ def main() -> int:
     parser.add_argument("--file", help="Candidate DT4H_Synthetic_*.csv")
     parser.add_argument("--all", action="store_true",
                         help="Gate every DT4H_Synthetic_*.csv and DT4H_Candidate_*.csv in "
-                             "output/generate/ and print a both-policies summary table. "
+                             "<output-dir>/generate/ (default ./output/generate/, or "
+                             "--output-dir) and print a both-policies summary table. "
                              "Per-file reports are written as usual; exit code is 0 when "
                              "the sweep completes (verdicts live in the reports).")
     parser.add_argument("--policy", choices=sorted(POLICIES), default=DEFAULT_POLICY,
@@ -185,6 +186,13 @@ def main() -> int:
     parser.add_argument("--note",
                         help="Free text recorded in the report: who authorized a "
                              "non-default policy, and when (e.g. a consortium decision).")
+    parser.add_argument("--output-dir", metavar="PATH",
+                        help="Root directory the run to gate actually used (main.py "
+                             "--output-dir), if not the default ./output. Needed for --all "
+                             "to know where to look, and for --file too: the coherence "
+                             "rules, privacy assessment and encoding map it cross-checks "
+                             "against are read from THIS directory, not just the candidate "
+                             "file's own location.")
     args = parser.parse_args()
 
     policy_name = args.policy
@@ -206,7 +214,7 @@ def main() -> int:
           f"{DISTANCE_NATURAL_SHARE:.0%} share")
     if args.note:
         print(f"Note: {args.note}")
-    config = PipelineConfig()
+    config = PipelineConfig(output_dir=args.output_dir) if args.output_dir else PipelineConfig()
 
     if args.all:
         import glob as _glob
