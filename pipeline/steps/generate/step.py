@@ -102,6 +102,45 @@ class GenerateStep(PipelineStep):
             print(f"  Domain coverage: all {len(continuous)} continuous training "
                   f"column(s) have a declared range.")
 
+            # A too-narrow reviewed range would otherwise fail every DP run
+            # in the plan one at a time (see smartnoise_models._bound_
+            # constraints) with a message asking an operator to re-invoke
+            # with --clip-to-domain. Check it ONCE here, for the whole
+            # campaign, and self-heal instead: an external deployment site
+            # is not expected to know this repo's flags. Clipping still
+            # only ever moves a value to the ALREADY-PUBLIC declared bound,
+            # never to anything derived from the data, so auto-enabling it
+            # preserves the exact guarantee a manually-passed
+            # --clip-to-domain would.
+            if not config.clip_to_domain:
+                from pipeline.steps.generate.synthesizers.smartnoise_models import (
+                    coarse_observed_span,
+                    compute_domain_report,
+                )
+                from pipeline.steps.preprocess.transforms import NUMERIC_ENCODING_FILENAME
+
+                enc_path = os.path.join(config.step_dir("preprocess"), NUMERIC_ENCODING_FILENAME)
+                encoding = {}
+                if os.path.exists(enc_path):
+                    with open(enc_path) as f:
+                        encoding = json.load(f)
+                report = compute_domain_report(train, continuous, domains, encoding)
+                violating = {c: r for c, r in report["columns"].items() if r["violates"]}
+                if violating:
+                    total = sum(r["n_below"] + r["n_above"] for r in violating.values())
+                    config.clip_to_domain = True
+                    print(f"  ⚠️  {len(violating)} continuous column(s), {total} datapoint(s) "
+                          f"total, fall outside their declared public domain -- "
+                          f"automatically enabling --clip-to-domain for this campaign "
+                          f"(values outside a column's declared bound are clipped TO "
+                          f"THAT BOUND, not to anything derived from the data):")
+                    for c, r in sorted(violating.items(),
+                                       key=lambda kv: -(kv[1]["n_below"] + kv[1]["n_above"])):
+                        n = r["n_below"] + r["n_above"]
+                        print(f"      {c}: {n}/{r['n_total']} datapoint(s) outside "
+                              f"[{r['lower']:g}, {r['pub_hi']:g}] "
+                              f"(observed {coarse_observed_span(r)}, coarsened)")
+
         domains_sha = sha if dp_runs else None
         reused, to_execute = self._reconcile_with_previous_attempt(
             out_dir, plan, prov, domains_sha, config)

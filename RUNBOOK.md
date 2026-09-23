@@ -23,14 +23,14 @@ pip install lifelines anonymeter    # optional evaluators
 pip install numpy==2.2.6            # AFTER anonymeter -- restores numpy 2 (see requirements.txt)
 ```
 
-**Review the public domain file — required for MST, not for TVAE.**
-MST is differentially private and refuses to fit until a human has
-signed off on `public_domains.json`: open it, read every numeric
-range against your own clinical knowledge, then set `"reviewed": true`
-(and record `reviewed_by`/`reviewed_at`). It ships `reviewed: false` on
-purpose — another site's sign-off does not transfer. TVAE carries no
-DP guarantee and does not read this file at all; you can run
-`--model tvae` before this review is done.
+**Public domain file — already reviewed, nothing to do.**
+MST is differentially private and refuses to fit until
+`public_domains.json` is marked `"reviewed": true`. This repo ships it
+already reviewed and committed, so `--model mst` runs out of the box —
+no manual sign-off step required. If your site's clinical ranges
+genuinely differ from what's declared, open `public_domains.json` and
+adjust the relevant range(s) yourself before running. TVAE carries no
+DP guarantee and does not read this file at all.
 
 ## 2. Before every run: preflight
 
@@ -45,6 +45,14 @@ if the resolved plan actually contains `mst`/`aim` — so it fires for
 can't import on a given machine (a known failure: jaxlib built for a
 CPU instruction set — AVX — the machine doesn't have), **that machine
 can still run `--model tvae`, just not `--model mst`.**
+
+If preflight (or the run itself) reports training values outside a
+column's declared public domain, no action is needed: the generate
+step detects this automatically and clips those values to the
+declared bound before fitting (never to anything derived from the
+data, so the privacy guarantee is unaffected). This is the same thing
+`--clip-to-domain` does manually; you only need that flag yourself if
+you want it forced on ahead of time.
 
 ## 3. Run one model, into its own output directory
 

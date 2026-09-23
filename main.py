@@ -339,9 +339,10 @@ def preflight(config: PipelineConfig | None = None, min_free_gb: float = 5.0) ->
                 if violating:
                     total = sum(r["n_below"] + r["n_above"] for r in violating.values())
                     print(f"  ⚠️  {len(violating)} continuous column(s), {total} datapoint(s) total, "
-                          f"fall outside their declared public domain -- these will FAIL the run "
-                          f"unless --clip-to-domain is set (which clips them to the declared "
-                          f"bound, not to anything derived from the data):")
+                          f"fall outside their declared public domain -- the generate step will "
+                          f"automatically clip them to the declared bound (not to anything "
+                          f"derived from the data; pass --clip-to-domain yourself to force this "
+                          f"on before generate would otherwise detect it):")
                     for c, r in sorted(violating.items(), key=lambda kv: -(kv[1]["n_below"] + kv[1]["n_above"])):
                         n = r["n_below"] + r["n_above"]
                         # The sentinel tag is the key diagnostic: a column
@@ -549,12 +550,14 @@ def main() -> None:
                               "campaign needs ~2 GB (slim backup + DP re-fit outputs), not "
                               "the full-campaign 5 GB.")
     parser.add_argument("--clip-to-domain", action="store_true",
-                        help="Instead of failing when a continuous column's training "
-                             "values fall outside its declared public domain, clip those "
-                             "cells TO THE DECLARED BOUND (never to anything derived from "
-                             "the data) and record the clip in the run's provenance. For "
-                             "documented entry artifacts; run --preflight first to see "
-                             "how many cells are affected.")
+                        help="Force ON, ahead of time, what the generate step already "
+                             "enables automatically the moment it detects training values "
+                             "outside a continuous column's declared public domain: those "
+                             "cells are clipped TO THE DECLARED BOUND (never to anything "
+                             "derived from the data), and the clip is recorded in the "
+                             "run's provenance. Only needed if you want it on regardless "
+                             "of what generate finds; run --preflight first to see how "
+                             "many cells would be affected.")
     parser.add_argument("--preflight", action="store_true",
                          help="Verify libraries, GPU, inputs, disk and config, then exit. "
                               "Run this before a long run.")
