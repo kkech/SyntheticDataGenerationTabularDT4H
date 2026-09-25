@@ -1,0 +1,60 @@
+{
+  "load_data": {
+    "completed": true,
+    "completed_at": "2026-09-14T15:11:54.730800+00:00"
+  },
+  "profile_data": {
+    "completed": true,
+    "completed_at": "2026-09-14T15:11:55.045142+00:00"
+  },
+  "preprocess": {
+    "completed": true,
+    "completed_at": "2026-09-14T15:11:55.339560+00:00"
+  },
+  "profile_preprocessed_data": {
+    "completed": true,
+    "completed_at": "2026-09-14T15:11:55.514253+00:00"
+  },
+  "generate": {
+    "completed": true,
+    "completed_at": "2026-09-17T14:18:35.621815+00:00"
+  },
+  "evaluate": {
+    "completed": true,
+    "completed_at": "2026-09-17T14:35:40.171026+00:00"
+  },
+  "coherence": {
+    "completed": true,
+    "completed_at": "2026-09-17T14:37:02.572123+00:00"
+  },
+  "survival": {
+    "completed": false,
+    "failed_at": "2026-09-17T14:37:02.660566+00:00",
+    "error": "KeyError: 'cause_of_death_number_of_days_to_death_for_all_cause_f5a_first'"
+  },
+  "utility": {
+    "completed": false,
+    "pending": true,
+    "queued_at": "2026-09-14T15:11:54.559646+00:00"
+  },
+  "privacy": {
+    "completed": false,
+    "pending": true,
+    "queued_at": "2026-09-14T15:11:54.559970+00:00"
+  },
+  "attacks": {
+    "completed": false,
+    "pending": true,
+    "queued_at": "2026-09-14T15:11:54.560546+00:00"
+  },
+  "figures": {
+    "completed": false,
+    "pending": true,
+    "queued_at": "2026-09-14T15:11:54.560875+00:00"
+  },
+  "release_docs": {
+    "completed": false,
+    "pending": true,
+    "queued_at": "2026-09-14T15:11:54.561532+00:00"
+  }
+}

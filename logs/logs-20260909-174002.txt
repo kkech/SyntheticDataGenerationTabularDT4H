@@ -1,0 +1,726 @@
+[17:39:30] ======================================================================
+[17:39:30] Run started: 2026-09-09T15:39:30.585258+00:00
+[17:39:30] Command: main.py --force --extended --cdm-root /opt/dt4h/CDM-tools/feature-extraction-suite/output-data/myFhirServer/dataset/ --dp-only --cdm-study-version 1.4 --metadata metadata_new.json
+[17:39:30] ======================================================================
+[17:39:30] 🧹 Deleted previous outputs of 'load_data' (/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/load_data) for a clean rerun.
+
+[17:39:30] ======================================================================
+[17:39:30] ▶️  RUNNING 'load_data' (started 17:39:30)
+[17:39:30] ======================================================================
+[17:39:30] Found 4 part file(s):
+[17:39:30]   part-00000-a93a0266-3003-43e6-8ce0-04671149875e-c000.snappy.parquet: 1500 rows x 528 cols
+[17:39:30]   part-00001-d9ac8f12-6515-441d-9112-900738d86145-c000.snappy.parquet: 1500 rows x 528 cols
+[17:39:30]   part-00002-88cb00a5-cdab-45e5-ba44-feb468a4ddbd-c000.snappy.parquet: 1500 rows x 528 cols
+[17:39:30]   part-00003-fabaa371-bf81-474e-b30b-12bf87cc5876-c000.snappy.parquet: 531 rows x 528 cols
+[17:39:30] Concatenated: 5031 rows x 528 cols
+[17:39:30] Saved full dataset (local only, not for git) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/load_data/UC1_Resolved_Full.parquet
+[17:39:30] ✅ 'load_data' completed in 0s.
+[17:39:30] 🧹 Deleted previous outputs of 'profile_data' (/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_data) for a clean rerun.
+
+[17:39:30] ======================================================================
+[17:39:30] ▶️  RUNNING 'profile_data' (started 17:39:30)
+[17:39:30] ======================================================================
+[17:39:30] Copied metadata file (explicit --metadata) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_data/metadata.json
+[17:39:30] Profiling 5031 rows x 528 columns...
+[17:39:31] Saved column analysis (JSON) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_data/DT4H_Column_Analysis.json
+[17:39:31] Saved column analysis (Markdown) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_data/DT4H_Column_Analysis.md
+[17:39:31] Saved random sample of 20 row(s) (seed=0) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_data/DT4H_Sample20.parquet
+[17:39:31] ✅ 'profile_data' completed in 0s.
+[17:39:31] 🧹 Deleted previous outputs of 'preprocess' (/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess) for a clean rerun.
+
+[17:39:31] ======================================================================
+[17:39:31] ▶️  RUNNING 'preprocess' (started 17:39:31)
+[17:39:31] ======================================================================
+[17:39:31] Loaded 5031 rows x 528 columns.
+[17:39:31] Unique patients (pid): 5031
+[17:39:31] Validating against metadata...
+[17:39:31]   528 declared in metadata.json, 528 present in data, 528 match.
+[17:39:31] Checking expected non-null pairs...
+[17:39:31]   ⚠️ lab_results_hdl_value_first: 0 non-null vs lab_results_ldl_value_first: 0 non-null (expected similar (ordered together))
+[17:39:31]   lab_results_potassium_value_first: 4861 non-null vs lab_results_sodium_value_first: 4860 non-null (expected similar (ordered together))
+[17:39:31]   lab_results_albuminBS_value_first: 4059 non-null vs lab_results_ntProBnp_value_first: 2780 non-null (expected similar)
+[17:39:31]   lab_results_albuminBS_value_first: 4059 non-null vs lab_results_crpNonHs_value_first: 2711 non-null (expected similar)
+[17:39:31]   ⚠️ lab_results_albuminBS_value_first: 4059 non-null vs lab_results_hba1c_value_first: 0 non-null (expected similar)
+[17:39:31]   vital_signs_heartRate_value_first: 3616 non-null vs vital_signs_oxygenSaturation_value_first: 3489 non-null (expected similar, oxygen sat maybe slightly lower)
+[17:39:31] Flattening ARRAY[NOMINAL] columns...
+[17:39:31]   Flattening 2 ARRAY[NOMINAL] column(s) to scalar: ['electrocardiographs_ecg_type_of_rhythms_pET_first', 'electrocardiographs_ecg_type_of_rhythms_pET_last']
+[17:39:31] Normalizing numeric dtypes...
+[17:39:31]   Casting 180 Decimal column(s) to Float64: 180 column(s)
+[17:39:31] Checking symptom columns...
+[17:39:31]   30 symptom_* column(s) present, 30 currently constant (NLP module not yet integrated) -- kept in the data, not dropped.
+[17:39:31] Combining medication columns...
+[17:39:31]   Combined medication columns into 54 feature(s) (27 current + 27 history).
+[17:39:31] Combining condition columns...
+[17:39:31]   Combined condition columns into 31 feature(s).
+[17:39:31] Encoding NYHA...
+[17:39:31]   Encoding nyha_nyha_pET via metadata valueSet: {'LA28404-4': 1, 'LA28405-1': 2, 'LA28406-9': 3, 'LA28407-7': 4}
+[17:39:31] Preferring _first/_last numeric variants...
+[17:39:31]   Dropping 140 numeric aggregate column(s) (bare/_min/_max/_avg/_stddev) in favor of _first/_last.
+[17:39:31] Dropping identifier/datetime columns...
+[17:39:31]   Dropping 7 IDENTIFIER/DATETIME column(s): ['pid', 'encounterId', 'eventTime', 'exitTime', 'referenceTimePoint', 'encounters_admissionDate', 'encounters_dischargeDate']
+[17:39:31] Dropping near-unique identifier-like columns (safety net)...
+[17:39:31]   Dropping 1 near-unique identifier-like column(s) not caught by declared type: ['patient_demographics_sourceIdentifier']
+[17:39:31] Final null cleanup...
+[17:39:31]   Filling 3373 missing 'nyha_nyha_pET' value(s) with sentinel 0 ('not assessed', kept distinct from real classes 1-4).
+[17:39:31]   Sentinel-encoded 51 numeric column(s) (2 time-to-event 'no event', 49 'not measured'); dropped 34 column(s) with fewer than 251 observed values (5% of 5031 rows).
+[17:39:31]     dropped lab_results_tfs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_tfs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_bnp_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_bnp_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_crpHs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_crpHs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_tropIHs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_tropIHs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_tropInHs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_tropInHs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_tropTHs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_tropTHs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_tropTnHs_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_tropTnHs_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_cholTot_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_cholTot_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_hdl_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_hdl_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_ldl_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_ldl_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_creatUS_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_creatUS_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_albuminUS_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_albuminUS_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_acr_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_acr_value_last (only 0 observed)
+[17:39:31]     dropped lab_results_hba1c_value_first (only 0 observed)
+[17:39:31]     dropped lab_results_hba1c_value_last (only 0 observed)
+[17:39:31]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_heart_failure_f5a_first (only 55 observed)
+[17:39:31]     dropped encounter_primary_reason_number_of_days_to_rehosp_for_renal_complications_f5a_first (only 59 observed)
+[17:39:31]     dropped cause_of_death_number_of_days_to_death_for_CV_f5a_first (only 0 observed)
+[17:39:31]     dropped cause_of_death_number_of_days_to_death_for_renal_f5a_first (only 0 observed)
+[17:39:31]     dropped cause_of_death_number_of_days_to_death_for_non_renal_and_non_CV_f5a_first (only 0 observed)
+[17:39:31]     dropped cause_of_death_number_of_days_to_death_for_all_cause_f5a_first (only 142 observed)
+[17:39:31]   Encoding map (for decoding synthetic output back to null) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/DT4H_Numeric_Missing_Encoding.json
+[17:39:31]   Normalized 188 boolean/categorical column(s) to String; 66 of them had nulls filled with an explicit 'Missing' category.
+[17:39:31] Remaining missing cells after all imputation: 0 null, 0 NaN
+[17:39:31] Saved 5031 rows x 245 columns -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/UC1_Preprocessed.parquet
+[17:39:31] Holdout split (seed 0): 3773 train rows -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/UC1_Train.parquet, 1258 holdout rows -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/UC1_Holdout.parquet
+[17:39:31] Saved holdout split manifest -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/DT4H_Holdout_Split.json
+[17:39:31] Saved preprocessing summary (JSON) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/DT4H_Preprocessing_Summary.json
+[17:39:31] Saved preprocessing summary (Markdown) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/preprocess/DT4H_Preprocessing_Summary.md
+[17:39:31] ✅ 'preprocess' completed in 0s.
+[17:39:31] 🧹 Deleted previous outputs of 'profile_preprocessed_data' (/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_preprocessed_data) for a clean rerun.
+
+[17:39:31] ======================================================================
+[17:39:31] ▶️  RUNNING 'profile_preprocessed_data' (started 17:39:31)
+[17:39:31] ======================================================================
+[17:39:31] Copied metadata file -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_preprocessed_data/metadata.json
+[17:39:31] Profiling 5031 rows x 245 columns (preprocessed)...
+[17:39:31] Saved preprocessed column analysis (JSON) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.json
+[17:39:31] Saved preprocessed column analysis (Markdown) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_preprocessed_data/DT4H_Preprocessed_Column_Analysis.md
+[17:39:31] Saved random sample of 20 row(s) (seed=0) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/profile_preprocessed_data/DT4H_Preprocessed_Sample20.parquet
+[17:39:31] ✅ 'profile_preprocessed_data' completed in 0s.
+[17:39:31] 🧹 Deleted previous outputs of 'generate' (/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate) for a clean rerun.
+
+[17:39:31] ======================================================================
+[17:39:31] ▶️  RUNNING 'generate' (started 17:39:31)
+[17:39:31] ======================================================================
+[17:39:31] Loaded TRAINING split: 3773 rows x 245 columns (the 25% holdout is never shown to any generator)
+[17:39:33] Seed: 0 | python 3.10.21
+[17:39:33] GPU: NVIDIA L40S-16C -- 14.74 GB free of 16.94 GB (CUDA 12.1)
+[17:39:33] ⚠️  Working tree has uncommitted changes -- this run is not reproducible from the recorded git commit alone.
+[17:39:33] Holding out 102 constant column(s) from training (re-attached verbatim after sampling).
+[17:39:33] Training columns: 57 continuous, 86 categorical
+
+[17:39:33] Run plan: 32 run(s) -- dpctgan_eps1_seed0, dpctgan_eps5_seed0, dpctgan_eps8_seed0, dpctgan_eps10_seed0, dpctgan_eps15_seed0, dpctgan_eps20_seed0, dpctgan_eps15_seed1, dpctgan_eps15_seed2, aim50_eps1_seed0, aim50_eps5_seed0, aim50_eps8_seed0, aim50_eps10_seed0, aim50_eps15_seed0, aim50_eps20_seed0, mst_eps1_seed0, mst_eps5_seed0, mst_eps8_seed0, mst_eps10_seed0, mst_eps15_seed0, mst_eps20_seed0, mst_eps15_seed1, mst_eps15_seed2, aim40_eps1_seed0, aim40_eps5_seed0, aim40_eps8_seed0, aim40_eps10_seed0, aim40_eps15_seed0, aim40_eps20_seed0, patectgan_eps1_seed0, patectgan_eps5_seed0, patectgan_eps15_seed0, mst_eps0p5_seed0
+[17:39:33] Public numeric domains: 61 reviewed column range(s) from /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/public_domains.json (sha256 5120731a038c...) -- these bound all 32 DP run(s); no bound is derived from the training data.
+
+[17:39:33] Selecting top 40 outcome-relevant columns for width-limited runs (7 force-included: 4 TSTR targets + demographics/NYHA)...
+[17:39:34]   Selected 40 columns (top ranked: ['ckd_severity_categorizedValue', 'ckd_severity_calculated_or_measured', 'hyperkalemia_severity_categorizedValue', 'lab_results_bun_value_last', 'lab_results_crpNonHs_value_last'])
+[17:39:34]   Saved column selection (auditable) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate/DT4H_Column_Selection_top40.json
+
+[17:39:34] Selecting top 50 outcome-relevant columns for width-limited runs (7 force-included: 4 TSTR targets + demographics/NYHA)...
+[17:39:35]   Selected 50 columns (top ranked: ['ckd_severity_categorizedValue', 'ckd_severity_calculated_or_measured', 'hyperkalemia_severity_categorizedValue', 'lab_results_bun_value_last', 'lab_results_crpNonHs_value_last'])
+[17:39:35]   Saved column selection (auditable) -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate/DT4H_AIM_Column_Selection.json
+
+[17:39:35] [run 1/32]
+[17:39:35] ======================================================================
+[17:39:35] ▶️  RUN: dpctgan_eps1_seed0 (model dpctgan, seed 0, ε=1.0)
+[17:39:35] ======================================================================
+[17:39:35] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:35] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps1_seed0 failed after 0.5s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 2/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps5_seed0 (model dpctgan, seed 0, ε=5.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps5_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 3/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps8_seed0 (model dpctgan, seed 0, ε=8.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps8_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 4/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps10_seed0 (model dpctgan, seed 0, ε=10.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps10_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 5/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps15_seed0 (model dpctgan, seed 0, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps15_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 6/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps20_seed0 (model dpctgan, seed 0, ε=20.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps20_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 7/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps15_seed1 (model dpctgan, seed 1, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps15_seed1 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 8/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: dpctgan_eps15_seed2 (model dpctgan, seed 2, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ dpctgan_eps15_seed2 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 9/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps1_seed0 (model aim, seed 0, ε=1.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps1_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 10/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps5_seed0 (model aim, seed 0, ε=5.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps5_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 11/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps8_seed0 (model aim, seed 0, ε=8.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps8_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 12/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps10_seed0 (model aim, seed 0, ε=10.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps10_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 13/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps15_seed0 (model aim, seed 0, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps15_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 14/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim50_eps20_seed0 (model aim, seed 0, ε=20.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 50 of 143 training columns (top-50 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim50_eps20_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 15/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps1_seed0 (model mst, seed 0, ε=1.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps1_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 16/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps5_seed0 (model mst, seed 0, ε=5.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps5_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 17/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps8_seed0 (model mst, seed 0, ε=8.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps8_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 18/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps10_seed0 (model mst, seed 0, ε=10.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps10_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 19/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps15_seed0 (model mst, seed 0, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps15_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 20/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps20_seed0 (model mst, seed 0, ε=20.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps20_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 21/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps15_seed1 (model mst, seed 1, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps15_seed1 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 22/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps15_seed2 (model mst, seed 2, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ mst_eps15_seed2 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 23/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps1_seed0 (model aim, seed 0, ε=1.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps1_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 24/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps5_seed0 (model aim, seed 0, ε=5.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps5_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 25/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps8_seed0 (model aim, seed 0, ε=8.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 8.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps8_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 26/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps10_seed0 (model aim, seed 0, ε=10.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 10.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps10_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 27/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps15_seed0 (model aim, seed 0, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps15_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 28/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: aim40_eps20_seed0 (model aim, seed 0, ε=20.0)
+[17:39:36] ======================================================================
+[17:39:36] Width-limited run: 40 of 143 training columns (top-40 selection, committed JSON).
+[17:39:36] Differential privacy ON -- total epsilon budget: 20.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ aim40_eps20_seed0 failed after 0.0s: ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 5 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'smoking_status_smoker_totalSmokingDuration_sum']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 29/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: patectgan_eps1_seed0 (model patectgan, seed 0, ε=1.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 1.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ patectgan_eps1_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 30/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: patectgan_eps5_seed0 (model patectgan, seed 0, ε=5.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 5.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ patectgan_eps5_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 31/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: patectgan_eps15_seed0 (model patectgan, seed 0, ε=15.0)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 15.0 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] Training... (time limit: 21600s for fit, 21600s for sampling)
+[17:39:36] ❌ patectgan_eps15_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] [run 32/32]
+[17:39:36] ======================================================================
+[17:39:36] ▶️  RUN: mst_eps0p5_seed0 (model mst, seed 0, ε=0.5)
+[17:39:36] ======================================================================
+[17:39:36] Differential privacy ON -- total epsilon budget: 0.5 (bounds come from the reviewed public domain file; delta is recorded once the model is built)
+[17:39:36] CPU-only synthesizer (no GPU acceleration available for this method).
+[17:39:36] Training... (time limit: 14400s for fit, 14400s for sampling)
+[17:39:36] ❌ mst_eps0p5_seed0 failed after 0.0s: ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+[17:39:36] Traceback (most recent call last):
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/step.py", line 371, in _run_one
+[17:39:36]     synth.fit(run_train, categorical_columns=categorical, continuous_columns=continuous)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 195, in fit
+[17:39:36]     constraints = self._bound_constraints(df, continuous_columns, domains, encoding)
+[17:39:36]   File "/home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/pipeline/steps/generate/synthesizers/smartnoise_models.py", line 280, in _bound_constraints
+[17:39:36]     raise ValueError(
+[17:39:36] ValueError: 10 continuous column(s) have no entry in the reviewed public domain file: ['vital_signs_oxygenSaturation_value_last', 'vital_signs_oxygenSaturation_value_first', 'lab_results_bun_value_last', 'lab_results_bun_value_first', 'lab_results_hba1c%_value_last', 'lab_results_hba1c%_value_first', 'electrocardiographs_ecg_qrs_axis_pET_last', 'electrocardiographs_ecg_qrs_axis_pET_first', 'smoking_status_smoker_totalSmokingDuration_sum', 'maggic_total_score']. Re-run make_public_domains.py (it enumerates every modelled numeric column) and review the added ranges.
+
+
+[17:39:36] Saved generation summary -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate/DT4H_Generation_Summary.json
+[17:39:36] Saved generation summary -> /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate/DT4H_Generation_Summary.md
+
+[17:39:36] 0 run(s) succeeded, 32 failed.
+[17:39:36] ❌ Step 'generate' failed after 5s: Every run failed -- see /home/rmucsc.rm.unicatt.it/sb005127/SyntheticDataGenerationTabularDT4H/output/generate/DT4H_Generation_Summary.json for the errors.
+
+[17:39:36] Run finished: 2026-09-09T15:39:36.592932+00:00
