@@ -6,15 +6,18 @@ evaluation report) at a location you choose. Written for an operator
 running this at a partner site who is not expected to know this
 repo's run-plan/epsilon vocabulary.
 
-Branch: `feature/synthesizer-filter` (`--model`/`--output-dir` are not
-yet on `main`).
+Branch: `deploy` (`--model`/`--output-dir` are not yet on `main`).
+`deploy` is `feature/synthesizer-filter` plus the reviewed
+`public_domains.json` and automatic domain clipping; checking out
+`feature/synthesizer-filter` instead leaves the file unreviewed, and
+`--model mst` then refuses to start.
 
 ## 1. One-time setup, per machine
 
 ```bash
 git clone <repo-url>
 cd SyntheticDataGenerationTabularDT4H
-git checkout feature/synthesizer-filter
+git checkout deploy
 
 python -m venv .synthenv && source .synthenv/bin/activate
 pip install --upgrade pip setuptools wheel
